@@ -1,6 +1,26 @@
 /* Guerra RT UI */
 .war-app{display:grid;grid-template-columns:280px 1fr 320px;gap:12px;min-height:78vh}
-@media(max-width:1100px){.war-app{grid-template-columns:1fr}}
+@media(max-width:1100px){
+  .war-app{grid-template-columns:1fr;gap:10px}
+  #warMap{height:min(52vh,420px)!important;min-height:280px}
+  .war-btn,.dest-select{min-height:44px;font-size:.95rem!important}
+  .war-btn.big{min-height:52px;font-size:1.05rem!important;width:100%}
+  .army-card{padding:12px;margin-bottom:10px}
+  .btn-row{display:flex;flex-wrap:wrap;gap:8px}
+  .btn-row .war-btn{flex:1 1 40%}
+  .move-box{margin-top:10px;padding:10px;background:var(--soft);border-radius:12px;border:1px solid var(--line)}
+  .dest-select{width:100%;padding:12px;font-size:16px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);margin:6px 0}
+}
+.dest-select{width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);margin:6px 0;font-size:1rem}
+.move-label{font-size:.75rem;font-weight:800;text-transform:uppercase;color:var(--muted)}
+.army-card{border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:8px;background:var(--soft)}
+.army-card.active{border-color:var(--accent);box-shadow:0 0 0 2px rgba(37,99,235,.25)}
+.unit-line{font-size:.8rem;color:var(--muted);margin:4px 0 8px}
+.btn-row{display:flex;flex-wrap:wrap;gap:6px}
+.war-btn.big{padding:12px 14px;font-weight:800}
+.army-bubble{min-width:40px!important;height:40px!important;font-size:13px!important}
+.army-bubble.mine{box-shadow:0 0 0 3px #fff,0 0 0 5px currentColor}
+.army-bubble.sel{outline:3px solid #fbbf24}
 .war-panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden}
 .war-panel h2{margin:0;padding:12px 14px;font-size:.92rem;border-bottom:1px solid var(--line);background:var(--card-head)}
 .war-body{padding:12px;overflow:auto;flex:1}

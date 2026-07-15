@@ -18,6 +18,9 @@
   let uiTab = "tropas";
   let countryList = [];
   let busy = false; // evita doble clic crear/unirse
+  let mapFitted = false;
+  let lastPhase = null;
+  let basemapLayer = null;
 
   function $(id) {
     return document.getElementById(id);
@@ -108,8 +111,36 @@
   }
 
   function applyState(s) {
+    // guests: sync country list ONLY from host availableCountries
+    if (s && s.availableCountries && s.availableCountries.length) {
+      syncCountryListFromHost(s.availableCountries);
+    }
+    if (s && s.phase === "playing" && lastPhase !== "playing") {
+      mapFitted = false;
+    }
+    lastPhase = s && s.phase;
     state = s;
     renderAll();
+  }
+
+  async function syncCountryListFromHost(keys) {
+    const want = keys.slice();
+    const missing = want.filter((k) => !packs[k]);
+    if (missing.length) {
+      for (const key of missing) {
+        try {
+          packs[key] = await C.fetchJson(
+            "data/countries/" + encodeURIComponent(key) + ".json"
+          );
+        } catch (e) {}
+      }
+    }
+    countryList = want.map((key) => ({
+      key,
+      es: (packs[key] && packs[key].es) || key,
+    }));
+    // refresh lobby select if visible
+    if (state && state.phase === "lobby") renderLobby();
   }
 
   function hostBroadcast() {
@@ -132,10 +163,12 @@
       zoomControl: true,
       worldCopyJump: false,
       minZoom: 2,
-      maxZoom: 12,
-    }).setView([45, 10], 4);
-    L.tileLayer(
-      "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+      maxZoom: 14,
+      preferCanvas: true,
+    }).setView([48, 10], 5);
+    // mapa claro (mejor en PC y móvil que dark_all que a veces se ve “solo azul”)
+    basemapLayer = L.tileLayer(
+      "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
       {
         attribution: "&copy; OSM &copy; CARTO",
         subdomains: "abcd",
@@ -145,6 +178,11 @@
     borderLayer = L.layerGroup().addTo(map);
     tileLayer = L.layerGroup().addTo(map);
     armyLayer = L.layerGroup().addTo(map);
+    setTimeout(() => {
+      try {
+        map.invalidateSize(true);
+      } catch (e) {}
+    }, 200);
   }
 
   function colorForCountry(key) {
@@ -156,13 +194,12 @@
   }
 
   function redrawMap() {
-    if (!map || !state) return;
+    if (!map || !state || state.phase === "lobby") return;
     borderLayer.clearLayers();
     tileLayer.clearLayers();
     armyLayer.clearLayers();
     armyMarkers = {};
 
-    // borders of involved countries
     const keys = [
       ...new Set(
         Object.values(state.players || {})
@@ -170,52 +207,68 @@
           .filter(Boolean)
       ),
     ];
-    keys.forEach(async (k) => {
+    // borders (async once per pack)
+    keys.forEach((k) => {
       const pack = packs[k];
       if (!pack) return;
-      if (!pack.border && pack.borderUrl) {
-        try {
-          pack.border = await C.fetchJson(pack.borderUrl);
-        } catch (e) {}
-      }
-      if (pack.border) {
-        L.geoJSON(pack.border, {
+      const drawBorder = (geo) => {
+        if (!geo) return;
+        L.geoJSON(geo, {
           style: {
             color: colorForCountry(k),
-            weight: 2,
+            weight: 2.5,
             fillColor: colorForCountry(k),
-            fillOpacity: 0.18,
+            fillOpacity: 0.28,
           },
+          interactive: false,
         }).addTo(borderLayer);
+      };
+      if (pack.border) drawBorder(pack.border);
+      else if (pack.borderUrl && !pack._borderLoading) {
+        pack._borderLoading = true;
+        C.fetchJson(pack.borderUrl)
+          .then((geo) => {
+            pack.border = geo;
+            pack._borderLoading = false;
+            // one redraw of borders only if still playing
+            if (state && state.phase === "playing") {
+              try {
+                drawBorder(geo);
+              } catch (e) {}
+            }
+          })
+          .catch(() => {
+            pack._borderLoading = false;
+          });
       }
     });
 
-    // tiles as circles
+    // tiles
     Object.values(state.tiles || {}).forEach((t) => {
+      if (t.lat == null || t.lon == null) return;
       const col = colorForCountry(t.owner);
-      const r = t.capital ? 9 : 6;
+      const r = t.capital ? 11 : 7;
       const m = L.circleMarker([t.lat, t.lon], {
         radius: r,
-        color: "#fff",
-        weight: 1.5,
+        color: "#0f172a",
+        weight: 2,
         fillColor: col,
-        fillOpacity: 0.9,
+        fillOpacity: 0.92,
       }).addTo(tileLayer);
       m.bindTooltip(
-        t.name +
+        "<b>" +
+          t.name +
           (t.capital ? " ★" : "") +
-          "<br>Dueño: " +
-          ((state.countries[t.owner] || {}).es || t.owner) +
-          (Object.keys(t.buildings || {}).length
-            ? "<br>🏗 " + Object.keys(t.buildings).join(", ")
-            : ""),
-        { sticky: true }
+          "</b><br>Dueño: " +
+          ((state.countries[t.owner] || {}).es || t.owner),
+        { sticky: true, direction: "top" }
       );
       m.on("click", () => onTileClick(t.id));
     });
 
-    // armies
+    // armies — bubbles grandes (móvil)
     Object.values(state.armies || {}).forEach((a) => {
+      if (a.lat == null || a.lon == null) return;
       const col = colorForCountry(a.country);
       const n = E.totalUnits(a.units);
       const moving = !!a.moving;
@@ -224,10 +277,12 @@
         const left = Math.max(0, (a.moving.endsAt - state.now) / 1000);
         eta = Math.ceil(left) + "s → " + (a.moving.toName || "");
       }
+      const mine = a.country === myCountry();
       const html =
         '<div class="army-bubble' +
         (moving ? " moving" : "") +
         (selectedArmyId === a.id ? " sel" : "") +
+        (mine ? " mine" : "") +
         '" style="background:' +
         col +
         '">' +
@@ -237,12 +292,14 @@
       const icon = L.divIcon({
         className: "army-marker",
         html,
-        iconSize: [32, 32],
-        iconAnchor: [16, 16],
+        iconSize: [44, 44],
+        iconAnchor: [22, 22],
       });
       const marker = L.marker([a.lat, a.lon], {
         icon,
-        zIndexOffset: moving ? 2000 : 1000,
+        zIndexOffset: moving ? 3000 : mine ? 2000 : 1000,
+        keyboard: true,
+        title: (state.countries[a.country] || {}).es + " · " + n,
       }).addTo(armyLayer);
       marker.on("click", (ev) => {
         L.DomEvent.stopPropagation(ev);
@@ -251,12 +308,18 @@
       armyMarkers[a.id] = marker;
     });
 
-    // fit
-    const latlngs = Object.values(state.tiles || {}).map((t) => [t.lat, t.lon]);
-    if (latlngs.length) {
-      try {
-        map.fitBounds(latlngs, { padding: [40, 40], maxZoom: 6 });
-      } catch (e) {}
+    // fit SOLO una vez al empezar (no cada tick — eso rompía el mapa en PC)
+    if (!mapFitted) {
+      const latlngs = Object.values(state.tiles || {})
+        .filter((t) => t.lat != null)
+        .map((t) => [t.lat, t.lon]);
+      if (latlngs.length) {
+        try {
+          map.fitBounds(latlngs, { padding: [36, 36], maxZoom: 7 });
+          mapFitted = true;
+          setTimeout(() => map.invalidateSize(true), 100);
+        } catch (e) {}
+      }
     }
   }
 
@@ -267,25 +330,41 @@
       toast("Ese ejército no es tuyo");
       return;
     }
+    if (a.moving || a.inBattle) {
+      toast(a.moving ? "Ya va en ruta" : "Está en combate");
+      return;
+    }
     selectedArmyId = armyId;
     moveMode = true;
-    $("selBanner").hidden = false;
-    $("selBanner").textContent =
-      "Ejército seleccionado (" +
-      E.totalUnits(a.units) +
-      " u.). Clic en un tile destino para mover.";
+    const ban = $("selBanner");
+    if (ban) {
+      ban.hidden = false;
+      ban.innerHTML =
+        "📦 Ejército (" +
+        E.totalUnits(a.units) +
+        " u.) — elige <b>destino abajo</b> o toca un tile del mapa " +
+        '<button type="button" class="war-btn" id="btnCancelMove2">Cancelar</button>';
+      const c2 = $("btnCancelMove2");
+      if (c2)
+        c2.onclick = () => {
+          moveMode = false;
+          selectedArmyId = null;
+          ban.hidden = true;
+          renderSide();
+        };
+    }
+    uiTab = "tropas";
     renderSide();
+    // scroll comando into view on mobile
+    const side = $("sideBody");
+    if (side) side.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 
   function onTileClick(tileId) {
     if (moveMode && selectedArmyId) {
-      sendOrLocal({ type: "move", armyId: selectedArmyId, toTileId: tileId });
-      moveMode = false;
-      $("selBanner").hidden = true;
-      toast("Órdenes de movimiento enviadas");
+      doMove(selectedArmyId, tileId);
       return;
     }
-    // select tile for build if owned
     const t = state.tiles[tileId];
     if (t && t.owner === myCountry()) {
       window.__selectedTileId = tileId;
@@ -294,10 +373,57 @@
     }
   }
 
+  function doMove(armyId, toTileId) {
+    sendOrLocal({ type: "move", armyId, toTileId });
+    moveMode = false;
+    selectedArmyId = null;
+    const ban = $("selBanner");
+    if (ban) ban.hidden = true;
+    toast("En camino 🚚");
+    renderSide();
+  }
+
+  function destOptionsHtml(army) {
+    if (!army || !state) return "";
+    const tiles = Object.values(state.tiles || {}).filter(
+      (t) => t.id !== army.tileId
+    );
+    tiles.sort((a, b) => a.name.localeCompare(b.name, "es"));
+    return (
+      '<label class="move-label">Mover a ciudad</label>' +
+      '<select id="destSelect" class="dest-select">' +
+      '<option value="">— Elige destino —</option>' +
+      tiles
+        .map((t) => {
+          const own = t.owner === myCountry() ? " (tuyo)" : " (enemigo)";
+          return (
+            '<option value="' +
+            t.id +
+            '">' +
+            C.escapeHtml(t.name) +
+            own +
+            "</option>"
+          );
+        })
+        .join("") +
+      "</select>" +
+      '<button type="button" class="war-btn primary big" id="btnConfirmMove">🚀 Enviar tropas</button>'
+    );
+  }
+
   // ─── Render panels ─────────────────────────────────────
   function renderLobby() {
     const box = $("lobbyPlayers");
     if (!box || !state) return;
+
+    // Solo lista de países del HOST (availableCountries), nunca los 160
+    if (state.availableCountries && state.availableCountries.length) {
+      countryList = state.availableCountries.map((key) => ({
+        key,
+        es: (packs[key] && packs[key].es) || key,
+      }));
+    }
+
     box.innerHTML = Object.values(state.players)
       .map((p) => {
         const cname =
@@ -322,16 +448,20 @@
       .join("");
 
     const sel = $("countrySelect");
-    if (sel && countryList.length) {
+    if (sel) {
       const taken = new Set(
         Object.values(state.players)
           .map((p) => p.countryKey)
           .filter(Boolean)
       );
       const mine = state.players[me.peerId];
+      const list =
+        countryList.length > 0
+          ? countryList
+          : (state.availableCountries || []).map((k) => ({ key: k, es: k }));
       sel.innerHTML =
-        '<option value="">— Elige país —</option>' +
-        countryList
+        '<option value="">— Elige país de la partida —</option>' +
+        list
           .map((c) => {
             const dis =
               taken.has(c.key) && (!mine || mine.countryKey !== c.key);
@@ -343,6 +473,7 @@
               (dis ? " disabled" : "") +
               ">" +
               C.escapeHtml(c.es) +
+              (dis ? " (ocupado)" : "") +
               "</option>"
             );
           })
@@ -350,7 +481,16 @@
     }
 
     $("roomCodeShow").textContent = state.roomCode || net?.roomCode || "—";
-    $("btnStart").style.display = isHost() ? "" : "none";
+    const startBtn = $("btnStart");
+    if (startBtn) startBtn.style.display = isHost() ? "" : "none";
+
+    // controles de lobby solo en lobby
+    const lobbyCtrls = $("lobbyControls");
+    if (lobbyCtrls) lobbyCtrls.hidden = state.phase !== "lobby";
+    const roomBlock = $("roomBlock");
+    if (roomBlock) {
+      roomBlock.style.display = state.phase === "lobby" ? "" : "none";
+    }
   }
 
   function renderSide() {
@@ -403,40 +543,52 @@
       if (!armies.length) html += "<p class='hint'>Sin ejércitos</p>";
       armies.forEach((a) => {
         const tile = state.tiles[a.tileId];
+        const selected = selectedArmyId === a.id;
         html +=
-          '<div class="unit-row" style="flex-direction:column;align-items:stretch">' +
+          '<div class="army-card' +
+          (selected ? " active" : "") +
+          '">' +
           "<div><b>" +
           (tile ? tile.name : "?") +
           "</b> · " +
           E.totalUnits(a.units) +
           " u." +
-          (a.moving ? " · 🚚 en ruta" : "") +
+          (a.moving ? " · 🚚 " + (a.moving.toName || "") : "") +
           (a.inBattle ? " · ⚔ combate" : "") +
-          "</div><div style='font-size:.8rem;color:var(--muted)'>" +
+          "</div><div class='unit-line'>" +
           Object.entries(a.units)
             .map(
               ([k, n]) =>
-                (CFG.UNITS[k] ? CFG.UNITS[k].icon + " " : "") + n + " " + k
+                (CFG.UNITS[k] ? CFG.UNITS[k].icon + " " : "") +
+                n +
+                " " +
+                (CFG.UNITS[k] ? CFG.UNITS[k].name : k)
             )
             .join(" · ") +
           "</div>" +
-          '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px">' +
-          '<button type="button" class="war-btn" data-sel="' +
+          '<div class="btn-row">' +
+          '<button type="button" class="war-btn primary big" data-sel="' +
           a.id +
-          '">Mover</button>' +
+          '">' +
+          (selected ? "✓ Seleccionado" : "📍 Elegir y mover") +
+          "</button>" +
           '<button type="button" class="war-btn" data-rec="' +
           a.id +
           '" data-u="infanteria">+Inf</button>' +
           '<button type="button" class="war-btn" data-rec="' +
           a.id +
-          '" data-u="tanque">+Tanque</button>' +
+          '" data-u="tanque">+Tan</button>' +
           '<button type="button" class="war-btn" data-rec="' +
           a.id +
-          '" data-u="avion">+Avión</button>' +
+          '" data-u="avion">+Avi</button>' +
           '<button type="button" class="war-btn" data-split="' +
           a.id +
           '">Dividir</button>' +
-          "</div></div>";
+          "</div>";
+        if (selected && !a.moving && !a.inBattle) {
+          html += '<div class="move-box">' + destOptionsHtml(a) + "</div>";
+        }
+        html += "</div>";
       });
     }
 
@@ -550,6 +702,18 @@
         renderSide();
       })
     );
+    const conf = $("btnConfirmMove");
+    if (conf) {
+      conf.addEventListener("click", () => {
+        const sel = $("destSelect");
+        const v = sel && sel.value;
+        if (!v || !selectedArmyId) {
+          toast("Elige un destino en la lista");
+          return;
+        }
+        doMove(selectedArmyId, v);
+      });
+    }
   }
 
   function btnTab(id, label) {
@@ -567,20 +731,36 @@
   function renderAll() {
     if (!state) return;
     document.body.dataset.phase = state.phase;
-    $("phaseLabel").textContent =
-      state.phase === "lobby"
-        ? "Lobby"
-        : state.phase === "playing"
-        ? "EN VIVO · tiempo real"
-        : "Fin";
-    if (state.phase === "lobby") renderLobby();
+    const pl = $("phaseLabel");
+    if (pl) {
+      pl.textContent =
+        state.phase === "lobby"
+          ? "Lobby"
+          : state.phase === "playing"
+          ? "EN VIVO"
+          : "Fin";
+    }
+
+    // Lobby UI vs partida: en PC no dejar "Iniciar guerra" durante el juego
+    const lobbyOnly = $("lobbyOnly");
+    if (lobbyOnly) lobbyOnly.hidden = state.phase !== "lobby";
+    const inGameLeft = $("inGameLeft");
+    if (inGameLeft) inGameLeft.hidden = state.phase === "lobby";
+
+    renderLobby();
     renderSide();
-    if (state.phase === "playing" || state.phase === "ended") redrawMap();
-    // battles banner
+    if (state.phase === "playing" || state.phase === "ended") {
+      redrawMap();
+    }
     const bats = Object.values(state.battles || {});
-    $("battleInfo").textContent = bats.length
-      ? "⚔ Batallas: " + bats.map((b) => b.tileName).join(", ")
-      : "";
+    const bi = $("battleInfo");
+    if (bi) {
+      bi.textContent = bats.length
+        ? "⚔ Batallas: " + bats.map((b) => b.tileName).join(", ")
+        : state.phase === "playing"
+        ? "Toca un ejército (lista o mapa) → elige destino → Enviar"
+        : "";
+    }
   }
 
   // ─── Host tick ─────────────────────────────────────────
@@ -717,13 +897,9 @@
 
     setBusy(true, "Uniendo a " + code + "…");
     try {
-      const idx = await C.fetchJson("data/index.json");
-      const top = idx.countries
-        .slice()
-        .sort((a, b) => (b.poblacion || 0) - (a.poblacion || 0))
-        .slice(0, 40)
-        .map((c) => c.key);
-      await loadCountryOptions(top);
+      // NO cargar 160 países: la lista llega del host en state.availableCountries
+      countryList = [];
+      packs = {};
 
       if (net) {
         try {
@@ -734,6 +910,9 @@
       net.on("error", (e) => toast(String(e)));
       net.on("state", (s) => {
         applyState(s);
+        if (s.availableCountries && s.availableCountries.length) {
+          syncCountryListFromHost(s.availableCountries);
+        }
         ensurePacksForPlayers();
       });
 
@@ -741,10 +920,9 @@
       me.peerId = info.peerId;
       me.role = "guest";
       showModal(false);
-      // placeholder until first state arrives
       if (!state) {
         $("sideBody").innerHTML =
-          "<p class='hint'>Conectado. Esperando estado del host…</p>";
+          "<p class='hint'>Conectado. Esperando al host… Solo verás los países de esta partida.</p>";
       }
       toast("Conectado a sala " + code);
     } catch (e) {
@@ -819,11 +997,23 @@
       const v = e.target.value;
       if (v) sendOrLocal({ type: "pick_country", countryKey: v });
     });
-    $("btnCancelMove").addEventListener("click", () => {
-      moveMode = false;
-      selectedArmyId = null;
-      $("selBanner").hidden = true;
-    });
+    const cancel = $("btnCancelMove");
+    if (cancel) {
+      cancel.addEventListener("click", () => {
+        moveMode = false;
+        selectedArmyId = null;
+        $("selBanner").hidden = true;
+        renderSide();
+      });
+    }
+    const rec = $("btnRecenter");
+    if (rec) {
+      rec.addEventListener("click", () => {
+        mapFitted = false;
+        redrawMap();
+        toast("Mapa centrado");
+      });
+    }
 
     const q = new URLSearchParams(location.search);
     if (q.get("join")) $("joinCode").value = q.get("join");

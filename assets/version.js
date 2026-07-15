@@ -5,9 +5,9 @@
  *   minor  6.3.1 → 6.4.0  (feature)
  *   major  6.4.0 → 7.0.0  (cambio grande)
  */
-window.ATLAS_VERSION = "6.3.0";
+window.ATLAS_VERSION = "6.4.0";
 window.ATLAS_VERSION_DATE = "2026-07-15";
-window.ATLAS_VERSION_LABEL = "Guerra RT + modal fix";
+window.ATLAS_VERSION_LABEL = "Guerra UX movil + mapa + paises de sala";
 
 (function () {
   function paint() {
