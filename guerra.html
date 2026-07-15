@@ -4,10 +4,11 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Guerra en tiempo real — Atlas</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<link rel="stylesheet" href="assets/common.css"/>
-<link rel="stylesheet" href="assets/common_v6_append.css"/>
-<link rel="stylesheet" href="assets/guerra/guerra.css"/>
+<link rel="stylesheet" href="assets/common.css?v=6.2"/>
+<link rel="stylesheet" href="assets/common_v6_append.css?v=6.2"/>
+<link rel="stylesheet" href="assets/guerra/guerra.css?v=6.2"/>
 </head>
 <body>
 <div class="wrap">
@@ -24,8 +25,8 @@
     </div>
   </div>
 
-  <!-- SETUP -->
-  <div id="setupModal" class="modal-war">
+  <!-- SETUP: class is-open = visible. Without is-open it is hidden. -->
+  <div id="setupModal" class="modal-war is-open" role="dialog" aria-modal="true">
     <div class="box">
       <h2 style="margin:0 0 8px">Sala de guerra</h2>
       <p class="hint">
@@ -96,11 +97,11 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-<script src="assets/core.js"></script>
-<script src="assets/extras.js"></script>
-<script src="assets/guerra/config.js"></script>
-<script src="assets/guerra/engine.js"></script>
-<script src="assets/guerra/net.js"></script>
-<script src="assets/guerra/guerra-app.js"></script>
+<script src="assets/core.js?v=6.2"></script>
+<script src="assets/extras.js?v=6.2"></script>
+<script src="assets/guerra/config.js?v=6.2"></script>
+<script src="assets/guerra/engine.js?v=6.2"></script>
+<script src="assets/guerra/net.js?v=6.2"></script>
+<script src="assets/guerra/guerra-app.js?v=6.2"></script>
 </body>
 </html>

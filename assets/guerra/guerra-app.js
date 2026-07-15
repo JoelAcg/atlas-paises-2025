@@ -27,20 +27,33 @@
     const m = $("setupModal");
     const g = $("gameUI");
     if (m) {
-      if (show) {
-        m.hidden = false;
-        m.style.display = "flex";
-        m.removeAttribute("aria-hidden");
+      // class is-open is the only thing that shows the modal (CSS)
+      m.classList.toggle("is-open", !!show);
+      m.hidden = !show;
+      m.setAttribute("aria-hidden", show ? "false" : "true");
+      // belt + suspenders against cached CSS
+      m.style.setProperty("display", show ? "flex" : "none", "important");
+      m.style.setProperty("visibility", show ? "visible" : "hidden", "important");
+      m.style.setProperty("pointer-events", show ? "auto" : "none", "important");
+      m.style.setProperty("opacity", show ? "1" : "0", "important");
+      if (!show) {
+        m.style.setProperty("z-index", "-1", "important");
       } else {
-        m.hidden = true;
-        m.style.display = "none";
-        m.setAttribute("aria-hidden", "true");
+        m.style.setProperty("z-index", "10000", "important");
       }
     }
     if (g) {
       g.hidden = !!show;
-      g.style.display = show ? "none" : "";
+      if (show) {
+        g.style.setProperty("display", "none", "important");
+      } else {
+        g.style.removeProperty("display");
+      }
     }
+    // debug helper in console
+    try {
+      console.log("[guerra] showModal", show, m && m.className);
+    } catch (e) {}
   }
 
   function setBusy(on, msg) {
