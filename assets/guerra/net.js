@@ -1,9 +1,6 @@
 /**
- * Red P2P con PeerJS — sala privada (código).
- * Host = autoridad del motor; clientes envían acciones y reciben estado.
- *
- * Señalización: cloud PeerJS (necesita internet para el handshake;
- * el tráfico de juego va P2P, ideal en la misma WiFi).
+ * Red P2P PeerJS — sala privada.
+ * Host = autoridad; evita dobles conexiones y re-entradas.
  */
 (function (global) {
   const PREFIX = "atlaswar-";
@@ -18,133 +15,206 @@
 
   function createNet() {
     let peer = null;
-    let role = null; // 'host' | 'guest'
+    let role = null;
     let roomCode = null;
-    let hostConn = null; // guest -> host
-    const guestConns = {}; // host: peerId -> DataConnection
-    const handlers = {
-      onState: null,
-      onOpen: null,
-      onError: null,
-      onPeerJoin: null,
-      onPeerLeave: null,
-      onLog: null,
-    };
+    let hostConn = null;
+    let destroyed = false;
+    let hostOpenResolved = false;
+    const guestConns = {};
+    const greeted = {}; // peerId already said hello
+    const handlers = {};
 
     function emit(ev, data) {
-      if (typeof handlers[ev] === "function") handlers[ev](data);
+      const fn = handlers[ev];
+      if (typeof fn === "function") fn(data);
     }
 
-    function wireConn(conn, asHost) {
+    function wireHostConn(conn) {
+      if (guestConns[conn.peer] && guestConns[conn.peer] !== conn) {
+        try {
+          conn.close();
+        } catch (e) {}
+        return;
+      }
+      guestConns[conn.peer] = conn;
+
       conn.on("data", (data) => {
         if (!data || !data.t) return;
-        if (asHost) {
-          if (data.t === "hello") {
-            emit("onPeerJoin", {
-              peerId: conn.peer,
-              name: data.name || "Jugador",
-            });
+        if (data.t === "hello") {
+          if (greeted[conn.peer]) {
+            // duplicate hello — just resend nothing, peer already in roster
             return;
           }
-          if (data.t === "action") {
-            emit("onAction", { peerId: conn.peer, action: data.action });
-            return;
-          }
-        } else {
-          if (data.t === "state") {
-            emit("onState", data.state);
-            return;
-          }
-          if (data.t === "kick") {
-            emit("onError", "Expulsado de la sala");
-          }
+          greeted[conn.peer] = true;
+          emit("peerJoin", {
+            peerId: conn.peer,
+            name: data.name || "Jugador",
+          });
+          return;
+        }
+        if (data.t === "action") {
+          emit("action", { peerId: conn.peer, action: data.action });
         }
       });
+
       conn.on("close", () => {
-        if (asHost) {
-          delete guestConns[conn.peer];
-          emit("onPeerLeave", conn.peer);
-        } else {
-          emit("onError", "Conexión con el host perdida");
-        }
+        delete guestConns[conn.peer];
+        delete greeted[conn.peer];
+        emit("peerLeave", conn.peer);
       });
-      conn.on("error", (e) => emit("onError", String(e)));
+
+      conn.on("error", () => {
+        /* swallow; close will fire */
+      });
     }
 
-    async function host(playerName) {
+    function wireGuestConn(conn) {
+      hostConn = conn;
+      conn.on("data", (data) => {
+        if (!data || !data.t) return;
+        if (data.t === "state") emit("state", data.state);
+        if (data.t === "kick") emit("error", "Expulsado de la sala");
+        if (data.t === "full") emit("error", "Sala llena");
+      });
+      conn.on("close", () => {
+        if (!destroyed) emit("error", "Conexión con el host perdida");
+      });
+      conn.on("error", (e) => emit("error", e.type || String(e)));
+    }
+
+    function host(playerName) {
+      if (peer) {
+        return Promise.reject(new Error("Ya hay una conexión activa"));
+      }
+      destroyed = false;
+      hostOpenResolved = false;
       role = "host";
       roomCode = genCode();
+
       return new Promise((resolve, reject) => {
-        peer = new Peer(PREFIX + roomCode, {
-          debug: 1,
-        });
+        let settled = false;
+        const fail = (err) => {
+          if (settled) return;
+          settled = true;
+          reject(err);
+        };
+        const ok = (v) => {
+          if (settled) return;
+          settled = true;
+          resolve(v);
+        };
+
+        peer = new Peer(PREFIX + roomCode, { debug: 0 });
+
+        const timer = setTimeout(() => {
+          fail(new Error("Timeout creando sala (red/PeerJS)"));
+        }, 20000);
+
         peer.on("open", (id) => {
-          emit("onOpen", { role, roomCode, peerId: id });
-          resolve({ roomCode, peerId: id });
+          clearTimeout(timer);
+          hostOpenResolved = true;
+          roomCode = id.replace(PREFIX, "");
+          emit("open", { role, roomCode, peerId: id });
+          ok({ roomCode, peerId: id });
         });
+
         peer.on("connection", (conn) => {
-          guestConns[conn.peer] = conn;
-          conn.on("open", () => {
-            wireConn(conn, true);
-            emit("onLog", "Conexión entrante " + conn.peer);
-          });
+          // replace stale socket for same peer
+          if (guestConns[conn.peer]) {
+            try {
+              guestConns[conn.peer].close();
+            } catch (e) {}
+          }
+          if (conn.open) wireHostConn(conn);
+          else conn.on("open", () => wireHostConn(conn));
         });
+
         peer.on("error", (err) => {
-          // ID taken → new code
-          if (String(err).includes("taken") || err.type === "unavailable-id") {
+          clearTimeout(timer);
+          if (err.type === "unavailable-id" || /taken/i.test(String(err))) {
             try {
               peer.destroy();
             } catch (e) {}
-            roomCode = genCode();
-            host(playerName).then(resolve).catch(reject);
+            peer = null;
+            // retry once with new code
+            host(playerName).then(ok).catch(fail);
             return;
           }
-          emit("onError", err.type || String(err));
-          reject(err);
+          emit("error", err.type || String(err));
+          fail(err);
         });
       });
     }
 
-    async function join(code, playerName) {
+    function join(code, playerName) {
+      if (peer) {
+        return Promise.reject(new Error("Ya hay una conexión activa"));
+      }
+      destroyed = false;
       role = "guest";
-      roomCode = (code || "").trim().toUpperCase();
+      roomCode = (code || "").trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+      if (roomCode.length < 4) {
+        return Promise.reject(new Error("Código inválido"));
+      }
+
       return new Promise((resolve, reject) => {
-        peer = new Peer({ debug: 1 });
+        let settled = false;
+        const fail = (err) => {
+          if (settled) return;
+          settled = true;
+          reject(err);
+        };
+        const ok = (v) => {
+          if (settled) return;
+          settled = true;
+          resolve(v);
+        };
+
+        peer = new Peer({ debug: 0 });
+        const timer = setTimeout(() => {
+          fail(new Error("Timeout al unirse (¿código mal o host offline?)"));
+        }, 25000);
+
         peer.on("open", () => {
-          hostConn = peer.connect(PREFIX + roomCode, { reliable: true });
-          hostConn.on("open", () => {
-            wireConn(hostConn, false);
-            hostConn.send({ t: "hello", name: playerName || "Jugador" });
-            emit("onOpen", {
-              role,
-              roomCode,
-              peerId: peer.id,
-            });
-            resolve({ roomCode, peerId: peer.id });
+          const conn = peer.connect(PREFIX + roomCode, {
+            reliable: true,
           });
-          hostConn.on("error", (e) => {
-            emit("onError", "No se pudo unir: " + (e.type || e));
-            reject(e);
+          conn.on("open", () => {
+            clearTimeout(timer);
+            wireGuestConn(conn);
+            // single hello
+            conn.send({ t: "hello", name: playerName || "Jugador" });
+            emit("open", { role, roomCode, peerId: peer.id });
+            ok({ roomCode, peerId: peer.id });
+          });
+          conn.on("error", (e) => {
+            clearTimeout(timer);
+            fail(e);
           });
         });
+
         peer.on("error", (err) => {
-          emit("onError", err.type || String(err));
-          reject(err);
+          clearTimeout(timer);
+          emit("error", err.type || String(err));
+          fail(err);
         });
       });
     }
 
     function sendAction(action) {
       if (role === "guest" && hostConn && hostConn.open) {
-        hostConn.send({ t: "action", action });
+        try {
+          hostConn.send({ t: "action", action });
+        } catch (e) {}
       }
     }
 
     function broadcastState(state) {
       if (role !== "host") return;
       const payload = { t: "state", state };
-      Object.values(guestConns).forEach((c) => {
-        if (c.open) {
+      Object.keys(guestConns).forEach((id) => {
+        const c = guestConns[id];
+        if (c && c.open) {
           try {
             c.send(payload);
           } catch (e) {}
@@ -153,6 +223,7 @@
     }
 
     function destroy() {
+      destroyed = true;
       try {
         if (hostConn) hostConn.close();
       } catch (e) {}
@@ -166,6 +237,10 @@
       } catch (e) {}
       peer = null;
       hostConn = null;
+      Object.keys(guestConns).forEach((k) => delete guestConns[k]);
+      Object.keys(greeted).forEach((k) => delete greeted[k]);
+      role = null;
+      roomCode = null;
     }
 
     return {
@@ -183,23 +258,11 @@
       get peerId() {
         return peer && peer.id;
       },
+      get isActive() {
+        return !!peer;
+      },
       on(ev, fn) {
-        // onState, onOpen, onError, onPeerJoin, onPeerLeave, onAction, onLog
-        const key =
-          "on" +
-          ev.charAt(0).toUpperCase() +
-          ev.slice(1);
-        // also allow onState style
-        if (ev.startsWith("on")) handlers[ev] = fn;
-        else handlers["on" + ev.charAt(0).toUpperCase() + ev.slice(1)] = fn;
-        // map common names
-        if (ev === "state") handlers.onState = fn;
-        if (ev === "open") handlers.onOpen = fn;
-        if (ev === "error") handlers.onError = fn;
-        if (ev === "peerJoin") handlers.onPeerJoin = fn;
-        if (ev === "peerLeave") handlers.onPeerLeave = fn;
-        if (ev === "action") handlers.onAction = fn;
-        if (ev === "log") handlers.onLog = fn;
+        handlers[ev] = fn;
       },
     };
   }

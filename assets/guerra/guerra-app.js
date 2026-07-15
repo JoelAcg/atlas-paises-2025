@@ -17,9 +17,59 @@
   let tickTimer = null;
   let uiTab = "tropas";
   let countryList = [];
+  let busy = false; // evita doble clic crear/unirse
 
   function $(id) {
     return document.getElementById(id);
+  }
+
+  function showModal(show) {
+    const m = $("setupModal");
+    const g = $("gameUI");
+    if (m) {
+      if (show) {
+        m.hidden = false;
+        m.style.display = "flex";
+        m.removeAttribute("aria-hidden");
+      } else {
+        m.hidden = true;
+        m.style.display = "none";
+        m.setAttribute("aria-hidden", "true");
+      }
+    }
+    if (g) {
+      g.hidden = !!show;
+      g.style.display = show ? "none" : "";
+    }
+  }
+
+  function setBusy(on, msg) {
+    busy = !!on;
+    const create = $("btnCreate");
+    const join = $("btnJoin");
+    if (create) {
+      create.disabled = on;
+      create.textContent = on && msg && msg.indexOf("Creando") >= 0 ? "Creando…" : "Crear sala (Host)";
+    }
+    if (join) {
+      join.disabled = on;
+      join.textContent = on && msg && msg.indexOf("Uniendo") >= 0 ? "Conectando…" : "Unirse a sala";
+    }
+    let ov = $("busyOverlay");
+    if (on) {
+      if (!ov) {
+        ov = document.createElement("div");
+        ov.id = "busyOverlay";
+        ov.className = "busy-overlay";
+        document.body.appendChild(ov);
+      }
+      ov.hidden = false;
+      ov.textContent = msg || "Conectando…";
+    } else if (ov) {
+      ov.hidden = true;
+    }
+    const st = $("statusLine");
+    if (st) st.textContent = on ? msg || "…" : "";
   }
 
   function toast(msg) {
@@ -565,92 +615,154 @@
   }
 
   // ─── Room flow ─────────────────────────────────────────
-  async function createRoom() {
-    me.name = $("playerName").value.trim() || "Host";
-    const preset = ($("presetCountries").value || "France,Germany,Italy")
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean);
-    await loadCountryOptions(preset);
-
-    net = GuerraNet.createNet();
+  function wireHostHandlers() {
     net.on("error", (e) => toast(String(e)));
     net.on("peerJoin", ({ peerId, name }) => {
-      if (!isHost()) return;
+      if (!isHost() || !state) return;
       state = E.addPlayer(state, peerId, name);
       hostBroadcast();
       renderAll();
     });
     net.on("peerLeave", (peerId) => {
-      if (!isHost()) return;
+      if (!isHost() || !state) return;
       state = E.removePlayer(state, peerId);
       hostBroadcast();
       renderAll();
     });
     net.on("action", ({ peerId, action }) => {
-      if (!isHost()) return;
+      if (!isHost() || !state) return;
       state = E.dispatch(state, peerId, action);
-      // auto-start check not here
       hostBroadcast();
       renderAll();
     });
+  }
 
-    const info = await net.host(me.name);
-    me.peerId = info.peerId;
-    me.role = "host";
-    state = E.createLobby(me.peerId, me.name);
-    state.roomCode = info.roomCode;
-    state.availableCountries = countryList.map((c) => c.key);
-    $("setupModal").hidden = true;
-    $("gameUI").hidden = false;
-    startHostLoop();
-    renderAll();
-    toast("Sala " + info.roomCode + " — comparte el código");
+  async function createRoom() {
+    if (busy) return;
+    if (net && net.isActive) {
+      toast("Ya estás en una sala. Recarga la página para salir.");
+      return;
+    }
+    setBusy(true, "Creando sala…");
+    try {
+      me.name = ($("playerName").value || "").trim() || "Host";
+      const preset = ($("presetCountries").value || "France,Germany,Italy")
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+      await loadCountryOptions(preset);
+
+      if (net) {
+        try {
+          net.destroy();
+        } catch (e) {}
+      }
+      net = GuerraNet.createNet();
+      wireHostHandlers();
+
+      const info = await net.host(me.name);
+      me.peerId = info.peerId;
+      me.role = "host";
+      state = E.createLobby(me.peerId, me.name);
+      state.roomCode = info.roomCode;
+      state.availableCountries = countryList.map((c) => c.key);
+
+      showModal(false);
+      startHostLoop();
+      renderAll();
+      toast("Sala " + info.roomCode + " lista — comparte el código");
+    } catch (e) {
+      console.error(e);
+      toast("Error creando sala: " + (e.message || e.type || e));
+      if (net) {
+        try {
+          net.destroy();
+        } catch (err) {}
+        net = null;
+      }
+      showModal(true);
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function joinRoom() {
-    me.name = $("playerName").value.trim() || "Jugador";
-    const code = ($("joinCode").value || "").trim().toUpperCase();
-    if (code.length < 4) {
-      toast("Código inválido");
+    if (busy) return;
+    if (net && net.isActive) {
+      toast("Ya estás conectado. Recarga para unirte a otra sala.");
       return;
     }
-    // load a broad list so guest can pick
-    const idx = await C.fetchJson("data/index.json");
-    const top = idx.countries
-      .slice()
-      .sort((a, b) => (b.poblacion || 0) - (a.poblacion || 0))
-      .slice(0, 40)
-      .map((c) => c.key);
-    await loadCountryOptions(top);
+    me.name = ($("playerName").value || "").trim() || "Jugador";
+    const code = ($("joinCode").value || "")
+      .trim()
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, "");
+    if (code.length < 4) {
+      toast("Escribe el código de la sala (5 letras)");
+      return;
+    }
 
-    net = GuerraNet.createNet();
-    net.on("error", (e) => toast(String(e)));
-    net.on("state", (s) => {
-      applyState(s);
-      // guest needs packs for map
-      ensurePacksForPlayers();
-    });
+    setBusy(true, "Uniendo a " + code + "…");
+    try {
+      const idx = await C.fetchJson("data/index.json");
+      const top = idx.countries
+        .slice()
+        .sort((a, b) => (b.poblacion || 0) - (a.poblacion || 0))
+        .slice(0, 40)
+        .map((c) => c.key);
+      await loadCountryOptions(top);
 
-    const info = await net.join(code, me.name);
-    me.peerId = info.peerId;
-    me.role = "guest";
-    $("setupModal").hidden = true;
-    $("gameUI").hidden = false;
-    toast("Conectado a sala " + code);
+      if (net) {
+        try {
+          net.destroy();
+        } catch (e) {}
+      }
+      net = GuerraNet.createNet();
+      net.on("error", (e) => toast(String(e)));
+      net.on("state", (s) => {
+        applyState(s);
+        ensurePacksForPlayers();
+      });
+
+      const info = await net.join(code, me.name);
+      me.peerId = info.peerId;
+      me.role = "guest";
+      showModal(false);
+      // placeholder until first state arrives
+      if (!state) {
+        $("sideBody").innerHTML =
+          "<p class='hint'>Conectado. Esperando estado del host…</p>";
+      }
+      toast("Conectado a sala " + code);
+    } catch (e) {
+      console.error(e);
+      toast(
+        "No se pudo unir: " +
+          (e.message || e.type || e) +
+          ". Revisa el código y que el host tenga la sala abierta."
+      );
+      if (net) {
+        try {
+          net.destroy();
+        } catch (err) {}
+        net = null;
+      }
+      showModal(true);
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function startMatch() {
-    if (!isHost()) return;
+    if (!isHost() || busy) return;
     await ensurePacksForPlayers();
-    // mark host ready if not
     const hostP = state.players[me.peerId];
     if (hostP && hostP.countryKey) hostP.ready = true;
     const allReady = Object.values(state.players).every(
       (p) => p.countryKey && p.ready
     );
     if (!allReady) {
-      toast("Todos deben elegir país y estar listos");
+      toast("Todos deben elegir país y pulsar Listo");
       return;
     }
     state = E.startGame(state, packs);
@@ -663,19 +775,28 @@
   function boot() {
     C.wireChrome();
     initMap();
+    showModal(true);
 
-    $("btnCreate").addEventListener("click", () => {
-      createRoom().catch((e) => {
-        console.error(e);
-        toast("Error creando sala: " + (e.type || e.message || e));
-      });
-    });
-    $("btnJoin").addEventListener("click", () => {
-      joinRoom().catch((e) => {
-        console.error(e);
-        toast("Error uniéndose: " + (e.type || e.message || e));
-      });
-    });
+    // un solo handler; ignore double-taps
+    $("btnCreate").addEventListener(
+      "click",
+      (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        createRoom();
+      },
+      { passive: false }
+    );
+    $("btnJoin").addEventListener(
+      "click",
+      (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        joinRoom();
+      },
+      { passive: false }
+    );
+
     $("btnReady").addEventListener("click", () => {
       sendOrLocal({ type: "ready", ready: true });
       toast("Listo ✓");
@@ -691,14 +812,9 @@
       $("selBanner").hidden = true;
     });
 
-    // URL ?join=CODE
     const q = new URLSearchParams(location.search);
-    if (q.get("join")) {
-      $("joinCode").value = q.get("join");
-    }
-    if (q.get("paises")) {
-      $("presetCountries").value = q.get("paises");
-    }
+    if (q.get("join")) $("joinCode").value = q.get("join");
+    if (q.get("paises")) $("presetCountries").value = q.get("paises");
   }
 
   if (document.readyState === "loading") {

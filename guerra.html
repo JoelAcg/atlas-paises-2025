@@ -39,11 +39,12 @@
       <label>Países del mapa (host) — claves separadas por coma</label>
       <input id="presetCountries" type="text" value="France,Germany,Italy" placeholder="France,Germany,Italy"/>
 
+      <p class="status-line" id="statusLine"></p>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
         <button type="button" class="war-btn primary" id="btnCreate">Crear sala (Host)</button>
         <hr style="border:none;border-top:1px solid var(--line);margin:4px 0"/>
         <label>Código de sala</label>
-        <input id="joinCode" type="text" placeholder="Ej. K7M2P" maxlength="8" style="text-transform:uppercase"/>
+        <input id="joinCode" type="text" placeholder="Ej. K7M2P" maxlength="8" style="text-transform:uppercase" autocomplete="off" autocapitalize="characters"/>
         <button type="button" class="war-btn" id="btnJoin">Unirse a sala</button>
       </div>
       <p class="hint" style="margin-top:12px">

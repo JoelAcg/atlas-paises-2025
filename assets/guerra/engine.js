@@ -65,9 +65,16 @@
   }
 
   function addPlayer(state, peerId, name) {
-    if (state.players[peerId]) return state;
+    // re-join same peer: only update name, no duplicate slot
+    if (state.players[peerId]) {
+      if (name) state.players[peerId].name = name;
+      return state;
+    }
     const n = Object.keys(state.players).length;
-    if (n >= CFG().MAX_PLAYERS) return state;
+    if (n >= CFG().MAX_PLAYERS) {
+      log(state, "Sala llena (" + CFG().MAX_PLAYERS + ")");
+      return state;
+    }
     state.players[peerId] = {
       peerId,
       name: name || "Jugador " + (n + 1),
@@ -75,6 +82,7 @@
       ready: false,
       color: CFG().COLORS[n % CFG().COLORS.length],
       isHost: false,
+      joinedAt: Date.now(),
     };
     log(state, state.players[peerId].name + " se unió a la sala");
     return state;
