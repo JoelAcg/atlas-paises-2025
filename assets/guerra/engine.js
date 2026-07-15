@@ -774,6 +774,7 @@
               lon: tile.lon,
               units: {},
               moving: null,
+              moveQueue: [],
             };
             state.armies[id] = army;
           }
