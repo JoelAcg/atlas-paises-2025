@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Guerra en tiempo real — Atlas</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="assets/common.css"/>
+<link rel="stylesheet" href="assets/common_v6_append.css"/>
+<link rel="stylesheet" href="assets/guerra/guerra.css"/>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand"><div>
+      <h1 style="text-transform:none;margin:0;font-size:1.45rem">Guerra · tiempo real</h1>
+      <div class="sub">Sala privada · tropas en tiles · P2P (WiFi/red)</div>
+    </div></div>
+    <div class="nav">
+      <a href="index.html">← Índice</a>
+      <a href="combinar.html">Combinar</a>
+      <span class="badge" id="phaseLabel">Lobby</span>
+      <button class="btn" type="button" id="btnTheme">🌙</button>
+    </div>
+  </div>
+
+  <!-- SETUP -->
+  <div id="setupModal" class="modal-war">
+    <div class="box">
+      <h2 style="margin:0 0 8px">Sala de guerra</h2>
+      <p class="hint">
+        <b>Tiempo real</b> (no por turnos). Un jugador crea la sala y comparte el código.
+        Los demás se unen desde otro móvil/PC (misma WiFi o internet).
+        Señalización PeerJS necesita internet; el juego va peer-to-peer.
+      </p>
+      <label>Tu nombre</label>
+      <input id="playerName" type="text" placeholder="Comandante" maxlength="24" value="Comandante"/>
+
+      <label>Países del mapa (host) — claves separadas por coma</label>
+      <input id="presetCountries" type="text" value="France,Germany,Italy" placeholder="France,Germany,Italy"/>
+
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+        <button type="button" class="war-btn primary" id="btnCreate">Crear sala (Host)</button>
+        <hr style="border:none;border-top:1px solid var(--line);margin:4px 0"/>
+        <label>Código de sala</label>
+        <input id="joinCode" type="text" placeholder="Ej. K7M2P" maxlength="8" style="text-transform:uppercase"/>
+        <button type="button" class="war-btn" id="btnJoin">Unirse a sala</button>
+      </div>
+      <p class="hint" style="margin-top:12px">
+        Ejemplo 3 jugadores: host elige Francia, otros Alemania e Italia → todos Listo → Host inicia.
+      </p>
+    </div>
+  </div>
+
+  <!-- GAME -->
+  <div id="gameUI" hidden>
+    <div id="selBanner" class="sel-banner" hidden>
+      Selecciona destino
+      <button type="button" class="war-btn" id="btnCancelMove" style="margin-left:8px">Cancelar</button>
+    </div>
+    <div class="war-app">
+      <section class="war-panel">
+        <h2>Sala · jugadores</h2>
+        <div class="war-body">
+          <div class="room-code" id="roomCodeShow">————</div>
+          <p class="hint" style="text-align:center;margin:8px 0">Comparte este código</p>
+          <div id="lobbyPlayers"></div>
+          <label style="font-size:.8rem;font-weight:700">Tu país</label>
+          <select id="countrySelect" style="width:100%;padding:8px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);margin:6px 0"></select>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px">
+            <button type="button" class="war-btn primary" id="btnReady">Listo</button>
+            <button type="button" class="war-btn danger" id="btnStart">Iniciar guerra</button>
+          </div>
+          <p class="hint" id="battleInfo" style="margin-top:10px"></p>
+        </div>
+      </section>
+
+      <section class="war-panel war-map-col">
+        <h2>Mapa · tiles y tropas</h2>
+        <div id="warMap"></div>
+        <div class="war-toolbar">
+          <span class="hint">Clic ejército propio → clic tile destino. El movimiento tarda y se ve en ruta.</span>
+        </div>
+      </section>
+
+      <section class="war-panel">
+        <h2>Comando</h2>
+        <div class="war-body" id="sideBody">
+          <p class="hint">Crea o únete a una sala…</p>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script src="assets/core.js"></script>
+<script src="assets/extras.js"></script>
+<script src="assets/guerra/config.js"></script>
+<script src="assets/guerra/engine.js"></script>
+<script src="assets/guerra/net.js"></script>
+<script src="assets/guerra/guerra-app.js"></script>
+</body>
+</html>
