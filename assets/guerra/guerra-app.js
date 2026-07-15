@@ -10,9 +10,11 @@
   let state = null;
   let me = { peerId: null, name: "Comandante", role: null };
   let packs = {}; // countryKey -> pack
-  let map, tileLayer, armyLayer, borderLayer;
+  let map, tileLayer, armyLayer, borderLayer, highlightLayer, linkLayer;
   let armyMarkers = {};
+  let tileMarkers = {};
   let selectedArmyId = null;
+  let selectedTileId = null;
   let moveMode = false;
   let tickTimer = null;
   let uiTab = "tropas";
@@ -176,6 +178,8 @@
       }
     ).addTo(map);
     borderLayer = L.layerGroup().addTo(map);
+    linkLayer = L.layerGroup().addTo(map);
+    highlightLayer = L.layerGroup().addTo(map);
     tileLayer = L.layerGroup().addTo(map);
     armyLayer = L.layerGroup().addTo(map);
     setTimeout(() => {
@@ -196,9 +200,18 @@
   function redrawMap() {
     if (!map || !state || state.phase === "lobby") return;
     borderLayer.clearLayers();
+    linkLayer.clearLayers();
+    highlightLayer.clearLayers();
     tileLayer.clearLayers();
     armyLayer.clearLayers();
     armyMarkers = {};
+    tileMarkers = {};
+
+    if (!state.adjacency) {
+      try {
+        E.buildAdjacency(state);
+      } catch (e) {}
+    }
 
     const keys = [
       ...new Set(
@@ -243,27 +256,91 @@
       }
     });
 
-    // tiles
+    // links de adyacencia (estilo red de provincias) — sutiles
+    const drawn = {};
+    Object.keys(state.adjacency || {}).forEach((aId) => {
+      const a = state.tiles[aId];
+      if (!a) return;
+      (state.adjacency[aId] || []).forEach((bId) => {
+        const key = aId < bId ? aId + "|" + bId : bId + "|" + aId;
+        if (drawn[key]) return;
+        drawn[key] = true;
+        const b = state.tiles[bId];
+        if (!b) return;
+        L.polyline(
+          [
+            [a.lat, a.lon],
+            [b.lat, b.lon],
+          ],
+          {
+            color: "#64748b",
+            weight: 1,
+            opacity: 0.35,
+            dashArray: "4 6",
+            interactive: false,
+          }
+        ).addTo(linkLayer);
+      });
+    });
+
+    // highlights: tile seleccionado + vecinos válidos para mover
+    const army =
+      selectedArmyId && state.armies[selectedArmyId]
+        ? state.armies[selectedArmyId]
+        : null;
+    const fromTileId = army ? army.tileId : selectedTileId;
+    const neigh = fromTileId ? E.neighbors(state, fromTileId) : [];
+
+    if (fromTileId && state.tiles[fromTileId]) {
+      const ft = state.tiles[fromTileId];
+      L.circleMarker([ft.lat, ft.lon], {
+        radius: 18,
+        color: "#22c55e",
+        weight: 4,
+        fillColor: "#4ade80",
+        fillOpacity: 0.35,
+        interactive: false,
+      }).addTo(highlightLayer);
+    }
+    neigh.forEach((nid) => {
+      const t = state.tiles[nid];
+      if (!t) return;
+      const enemy = t.owner !== myCountry();
+      L.circleMarker([t.lat, t.lon], {
+        radius: 15,
+        color: enemy ? "#ef4444" : "#eab308",
+        weight: 3,
+        fillColor: enemy ? "#f87171" : "#fde047",
+        fillOpacity: 0.45,
+        interactive: false,
+      }).addTo(highlightLayer);
+    });
+
+    // tiles (casillas = ciudades del módulo)
     Object.values(state.tiles || {}).forEach((t) => {
       if (t.lat == null || t.lon == null) return;
       const col = colorForCountry(t.owner);
-      const r = t.capital ? 11 : 7;
+      const isSel = t.id === fromTileId || t.id === selectedTileId;
+      const isNeigh = neigh.indexOf(t.id) >= 0;
+      const r = isSel ? 14 : t.capital ? 11 : isNeigh ? 10 : 7;
       const m = L.circleMarker([t.lat, t.lon], {
         radius: r,
-        color: "#0f172a",
-        weight: 2,
-        fillColor: col,
-        fillOpacity: 0.92,
+        color: isSel ? "#16a34a" : isNeigh ? "#ca8a04" : "#0f172a",
+        weight: isSel ? 4 : 2,
+        fillColor: isSel ? "#22c55e" : col,
+        fillOpacity: isSel ? 0.95 : 0.9,
       }).addTo(tileLayer);
       m.bindTooltip(
-        "<b>" +
+        "<b>Tile: " +
           t.name +
           (t.capital ? " ★" : "") +
           "</b><br>Dueño: " +
-          ((state.countries[t.owner] || {}).es || t.owner),
+          ((state.countries[t.owner] || {}).es || t.owner) +
+          (isNeigh ? "<br>➜ Destino adyacente" : ""),
         { sticky: true, direction: "top" }
       );
       m.on("click", () => onTileClick(t.id));
+      tileMarkers[t.id] = m;
     });
 
     // armies — bubbles grandes (móvil)
@@ -361,54 +438,121 @@
   }
 
   function onTileClick(tileId) {
+    selectedTileId = tileId;
+    window.__selectedTileId = tileId;
+    const t = state.tiles[tileId];
     if (moveMode && selectedArmyId) {
+      const army = state.armies[selectedArmyId];
+      if (!army) return;
+      // permitir clic en vecino O en cualquier tile (ruta)
       doMove(selectedArmyId, tileId);
       return;
     }
-    const t = state.tiles[tileId];
+    // clic en tile propio sin mover: seleccionar para construir
     if (t && t.owner === myCountry()) {
-      window.__selectedTileId = tileId;
+      // si hay ejército mío ahí, selecciónalo
+      const mine = Object.values(state.armies || {}).find(
+        (a) =>
+          a.country === myCountry() &&
+          a.tileId === tileId &&
+          !a.moving
+      );
+      if (mine) {
+        onArmyClick(mine.id);
+        return;
+      }
       uiTab = "build";
       renderSide();
+      redrawMap();
+    } else {
+      redrawMap();
     }
   }
 
   function doMove(armyId, toTileId) {
+    const army = state.armies[armyId];
+    if (!army) return;
+    if (!state.adjacency) E.buildAdjacency(state);
+    const path = E.findPath(state, army.tileId, toTileId);
+    if (!path || path.length < 2) {
+      toast("No hay ruta de tiles hacia ahí");
+      redrawMap();
+      return;
+    }
     sendOrLocal({ type: "move", armyId, toTileId });
     moveMode = false;
     selectedArmyId = null;
+    selectedTileId = toTileId;
     const ban = $("selBanner");
     if (ban) ban.hidden = true;
-    toast("En camino 🚚");
+    const hops = path.length - 1;
+    toast(
+      hops === 1
+        ? "Moviendo 1 tile 🚚"
+        : "Ruta de " + hops + " tiles (automática) 🚚"
+    );
     renderSide();
+    redrawMap();
   }
 
   function destOptionsHtml(army) {
     if (!army || !state) return "";
-    const tiles = Object.values(state.tiles || {}).filter(
-      (t) => t.id !== army.tileId
-    );
-    tiles.sort((a, b) => a.name.localeCompare(b.name, "es"));
-    return (
-      '<label class="move-label">Mover a ciudad</label>' +
+    if (!state.adjacency) E.buildAdjacency(state);
+    // Solo vecinos adyacentes (1 tile) — estilo HOI
+    // + opción "ruta a…" para tiles lejanos (path automático)
+    const neigh = E.neighbors(state, army.tileId)
+      .map((id) => state.tiles[id])
+      .filter(Boolean);
+    neigh.sort((a, b) => a.name.localeCompare(b.name, "es"));
+    const others = Object.values(state.tiles || {})
+      .filter((t) => t.id !== army.tileId && neigh.every((n) => n.id !== t.id))
+      .sort((a, b) => a.name.localeCompare(b.name, "es"));
+
+    let html =
+      '<p class="hint"><b>Tiles</b> = casillas (nombre de ciudad). Solo se mueve a <b>tiles vecinos</b> (amarillo). Enemigo adyacente = rojo. Destino lejano = ruta automática tile a tile.</p>' +
+      '<label class="move-label">1) Tile vecino (recomendado)</label>' +
       '<select id="destSelect" class="dest-select">' +
-      '<option value="">— Elige destino —</option>' +
-      tiles
-        .map((t) => {
-          const own = t.owner === myCountry() ? " (tuyo)" : " (enemigo)";
-          return (
-            '<option value="' +
-            t.id +
-            '">' +
-            C.escapeHtml(t.name) +
-            own +
-            "</option>"
-          );
-        })
-        .join("") +
+      '<option value="">— Elige tile adyacente —</option>';
+    if (!neigh.length) {
+      html += '<option value="" disabled>Sin vecinos (error de mapa)</option>';
+    }
+    neigh.forEach((t) => {
+      const own =
+        t.owner === myCountry()
+          ? " · tuyo"
+          : " · ⚔ enemigo (" +
+            ((state.countries[t.owner] || {}).es || t.owner) +
+            ")";
+      html +=
+        '<option value="' +
+        t.id +
+        '">→ ' +
+        C.escapeHtml(t.name) +
+        own +
+        "</option>";
+    });
+    html += "</select>";
+    html +=
+      '<label class="move-label">2) O ruta a tile lejano</label>' +
+      '<select id="destSelectFar" class="dest-select">' +
+      '<option value="">— (opcional) destino final —</option>';
+    others.forEach((t) => {
+      const own =
+        t.owner === myCountry()
+          ? " · tuyo"
+          : " · enemigo";
+      html +=
+        '<option value="' +
+        t.id +
+        '">' +
+        C.escapeHtml(t.name) +
+        own +
+        "</option>";
+    });
+    html +=
       "</select>" +
-      '<button type="button" class="war-btn primary big" id="btnConfirmMove">🚀 Enviar tropas</button>'
-    );
+      '<button type="button" class="war-btn primary big" id="btnConfirmMove">🚀 Mover por tiles</button>';
+    return html;
   }
 
   // ─── Render panels ─────────────────────────────────────
@@ -705,10 +849,11 @@
     const conf = $("btnConfirmMove");
     if (conf) {
       conf.addEventListener("click", () => {
-        const sel = $("destSelect");
-        const v = sel && sel.value;
+        const near = $("destSelect") && $("destSelect").value;
+        const far = $("destSelectFar") && $("destSelectFar").value;
+        const v = near || far;
         if (!v || !selectedArmyId) {
-          toast("Elige un destino en la lista");
+          toast("Elige un tile destino (vecino o ruta)");
           return;
         }
         doMove(selectedArmyId, v);

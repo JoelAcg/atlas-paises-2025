@@ -189,12 +189,17 @@
           lat: capTile.lat,
           lon: capTile.lon,
           units: clone(start.unitsAtCapital),
-          moving: null, // { toTileId, from, to, startedAt, endsAt, pathLabel }
+          moving: null,
+          moveQueue: [],
         };
       }
     }
 
-    log(state, "¡Partida en tiempo real iniciada!");
+    buildAdjacency(state);
+    log(
+      state,
+      "¡Partida iniciada! Movimiento tile a tile (ciudades = casillas HOI)."
+    );
     return state;
   }
 
@@ -252,7 +257,6 @@
   function speedMulArmy(state, army) {
     const c = state.countries[army.country];
     let s = (c && c.speedMul) || 1;
-    // average unit speed factor
     const U = CFG().UNITS;
     let w = 0;
     let sum = 0;
@@ -263,6 +267,120 @@
     }
     if (w > 0) s *= sum / w;
     return s;
+  }
+
+  /**
+   * Grafo de adyacencia estilo HOI:
+   * cada tile (ciudad del módulo) se conecta a los vecinos más cercanos.
+   * Los tiles se llaman como las ciudades (Paris, Berlin…) — son casillas de juego.
+   */
+  function buildAdjacency(state) {
+    const tiles = Object.values(state.tiles || {});
+    const adj = {};
+    tiles.forEach((t) => {
+      adj[t.id] = [];
+    });
+    const MAX_N = 6;
+    for (const a of tiles) {
+      const ranked = tiles
+        .filter((b) => b.id !== a.id)
+        .map((b) => ({
+          id: b.id,
+          d: distDeg(
+            { lat: a.lat, lon: a.lon },
+            { lat: b.lat, lon: b.lon }
+          ),
+        }))
+        .sort((x, y) => x.d - y.d);
+      if (!ranked.length) continue;
+      const nearest = ranked[0].d;
+      const cutoff = Math.max(nearest * 2.8, nearest + 0.35);
+      let n = 0;
+      for (const x of ranked) {
+        if (n >= MAX_N) break;
+        if (x.d > cutoff && n >= 3) break;
+        if (x.d > 8 && n >= 2) break; // no unir extremos del mapa
+        adj[a.id].push(x.id);
+        n++;
+      }
+    }
+    // undirected
+    for (const a of Object.keys(adj)) {
+      adj[a].forEach((b) => {
+        if (adj[b] && adj[b].indexOf(a) < 0) adj[b].push(a);
+      });
+    }
+    state.adjacency = adj;
+    return adj;
+  }
+
+  function neighbors(state, tileId) {
+    if (!state.adjacency) buildAdjacency(state);
+    return (state.adjacency && state.adjacency[tileId]) || [];
+  }
+
+  function isAdjacent(state, fromId, toId) {
+    return neighbors(state, fromId).indexOf(toId) >= 0;
+  }
+
+  /** BFS camino tile a tile */
+  function findPath(state, fromId, toId) {
+    if (fromId === toId) return [fromId];
+    if (!state.adjacency) buildAdjacency(state);
+    const q = [fromId];
+    const prev = { [fromId]: null };
+    let qi = 0;
+    while (qi < q.length) {
+      const cur = q[qi++];
+      const ns = neighbors(state, cur);
+      for (let i = 0; i < ns.length; i++) {
+        const n = ns[i];
+        if (prev[n] !== undefined) continue;
+        prev[n] = cur;
+        if (n === toId) {
+          const path = [];
+          let x = toId;
+          while (x != null) {
+            path.push(x);
+            x = prev[x];
+          }
+          path.reverse();
+          return path;
+        }
+        q.push(n);
+      }
+    }
+    return null;
+  }
+
+  function beginHop(state, army, toTileId) {
+    const from = state.tiles[army.tileId];
+    const to = state.tiles[toTileId];
+    if (!from || !to) return false;
+    if (!isAdjacent(state, army.tileId, toTileId)) return false;
+    const sec = moveDurationSec(
+      { lat: from.lat, lon: from.lon },
+      { lat: to.lat, lon: to.lon },
+      speedMulArmy(state, army)
+    );
+    // hop adyacente más corto que viaje libre
+    const hopSec = Math.min(
+      CFG().MOVE_MAX_SEC,
+      Math.max(2.5, sec * 0.55)
+    );
+    const now = state.now;
+    army.moving = {
+      toTileId,
+      fromLat: from.lat,
+      fromLon: from.lon,
+      toLat: to.lat,
+      toLon: to.lon,
+      fromName: from.name,
+      toName: to.name,
+      startedAt: now,
+      endsAt: now + hopSec * 1000,
+    };
+    return true;
   }
 
   // ─── Actions (host only) ─────────────────────────────────
@@ -295,39 +413,50 @@
     const country = playerCountry(state, peerId);
     if (!country || state.phase !== "playing") return state;
     const army = state.armies[armyId];
-    if (!army || army.country !== country || army.moving) return state;
+    if (!army || army.country !== country) return state;
+    if (army.moving || army.inBattle) {
+      log(state, "No se puede mover: en ruta o en combate");
+      return state;
+    }
     if (totalUnits(army.units) <= 0) return state;
     const from = state.tiles[army.tileId];
     const to = state.tiles[toTileId];
     if (!from || !to) return state;
-    // can only move to known map tiles (any country in match)
-    const sec = moveDurationSec(
-      { lat: from.lat, lon: from.lon },
-      { lat: to.lat, lon: to.lon },
-      speedMulArmy(state, army)
-    );
-    const now = state.now;
-    army.moving = {
-      toTileId,
-      fromLat: from.lat,
-      fromLon: from.lon,
-      toLat: to.lat,
-      toLon: to.lon,
-      fromName: from.name,
-      toName: to.name,
-      startedAt: now,
-      endsAt: now + sec * 1000,
-    };
+    if (from.id === to.id) return state;
+
+    if (!state.adjacency) buildAdjacency(state);
+
+    // Camino tile-a-tile (HOI). Si no es adyacente, encola hops.
+    let path = findPath(state, army.tileId, toTileId);
+    if (!path || path.length < 2) {
+      log(
+        state,
+        "Sin ruta por tiles entre " + from.name + " y " + to.name
+      );
+      return state;
+    }
+    // path[0] = actual; resto = destinos
+    const hops = path.slice(1);
+    army.moveQueue = hops.slice(1); // remaining after first hop
+    const first = hops[0];
+    if (!beginHop(state, army, first)) {
+      army.moveQueue = [];
+      log(state, "No se pudo iniciar movimiento");
+      return state;
+    }
+    const nHops = hops.length;
     log(
       state,
-      state.countries[country].es +
-        ": tropas " +
+      (state.countries[country] || {}).es +
+        ": " +
         from.name +
         " → " +
         to.name +
         " (" +
-        Math.round(sec) +
-        "s)"
+        nHops +
+        " tile" +
+        (nHops > 1 ? "s" : "") +
+        ")"
     );
     return state;
   }
@@ -406,6 +535,7 @@
     const to = state.tiles[m.toTileId];
     if (!to) {
       army.moving = null;
+      army.moveQueue = [];
       return;
     }
     army.tileId = to.id;
@@ -413,24 +543,42 @@
     army.lon = to.lon;
     army.moving = null;
 
-    // merge with friendly on tile
-    for (const other of Object.values(state.armies)) {
-      if (
-        other.id !== army.id &&
-        other.country === army.country &&
-        other.tileId === army.tileId &&
-        !other.moving
-      ) {
-        other.units = mergeUnits(other.units, army.units);
-        delete state.armies[army.id];
-        army = other;
-        break;
-      }
+    // merge with friendly on tile (only if not continuing queue and not battle)
+    const queue = army.moveQueue || [];
+    const willContinue = queue.length > 0;
+    const hostile = to.owner !== army.country;
+
+    if (hostile) {
+      army.moveQueue = []; // stop path on contact
+      startBattle(state, army, to);
+      return;
     }
 
-    if (to.owner !== army.country) {
-      // start or join battle
-      startBattle(state, army, to);
+    if (!willContinue) {
+      for (const other of Object.values(state.armies)) {
+        if (
+          other.id !== army.id &&
+          other.country === army.country &&
+          other.tileId === army.tileId &&
+          !other.moving &&
+          !other.inBattle
+        ) {
+          other.units = mergeUnits(other.units, army.units);
+          if (other.moveQueue && other.moveQueue.length) {
+            /* keep other queue */
+          }
+          delete state.armies[army.id];
+          return;
+        }
+      }
+    } else {
+      // next hop along path
+      const next = queue.shift();
+      army.moveQueue = queue;
+      if (next && !beginHop(state, army, next)) {
+        army.moveQueue = [];
+        log(state, "Ruta interrumpida en " + to.name);
+      }
     }
   }
 
@@ -729,5 +877,9 @@
     moveDurationSec,
     distDeg,
     uid,
+    buildAdjacency,
+    neighbors,
+    isAdjacent,
+    findPath,
   };
 })(window);

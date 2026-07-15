@@ -3,7 +3,7 @@ const path = require("path");
 const { execSync } = require("child_process");
 const root = __dirname;
 const git = "C:/Program Files/Git/cmd/git.exe";
-const VER = "6.4.0";
+const VER = "6.5.0";
 const files = [
   "index.html",
   "guerra.html",

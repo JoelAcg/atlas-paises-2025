@@ -21,6 +21,12 @@
 .army-bubble{min-width:40px!important;height:40px!important;font-size:13px!important}
 .army-bubble.mine{box-shadow:0 0 0 3px #fff,0 0 0 5px currentColor}
 .army-bubble.sel{outline:3px solid #fbbf24}
+/* tile selection hints in panel */
+.tile-legend{display:flex;flex-wrap:wrap;gap:8px;font-size:.72rem;margin:8px 0;color:var(--muted)}
+.tile-legend i{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:middle;margin-right:4px;border:2px solid #0f172a}
+.tile-legend .sel{background:#22c55e}
+.tile-legend .adj{background:#fde047}
+.tile-legend .enemy{background:#f87171}
 .war-panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden}
 .war-panel h2{margin:0;padding:12px 14px;font-size:.92rem;border-bottom:1px solid var(--line);background:var(--card-head)}
 .war-body{padding:12px;overflow:auto;flex:1}
