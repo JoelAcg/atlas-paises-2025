@@ -1,0 +1,342 @@
+================================================================================
+POBLACIÓN Y ESTADÍSTICAS POR PAÍS — DOSSIER 2025*
+Generado: 2026-07-15T00:19:28.319Z
+Fuentes: DataPaises (tiles) + dossier Datosmacro + World Bank + API countries
+Formato: NombreES (Clave): Poblacion: X, PIB: Y M USD, PIB_pc: Z USD, Deuda: D, IDH: I, Tiles: N, Capital: C
+================================================================================
+
+Afganistán (Afghanistan): Poblacion: 43.8M (43,844,000), PIB: 17,817 M USD, PIB_pc: 418 USD, Deuda: 8.91%, IDH: 0.462, Tiles: 14, Capital: Kabul, ISO: AF
+Albania (Albania): Poblacion: 2.4M (2,363,314), PIB: 27,037 M USD, PIB_pc: 9,948 USD, Deuda: 54.51%, IDH: 0.789, Tiles: 5, Capital: Tirana, ISO: AL
+Alemania (Germany): Poblacion: 83.5M (83,516,593), PIB: 4,456,081 M USD, PIB_pc: 53,356 USD, Deuda: N/D, IDH: N/D, Tiles: 28, Capital: Berlin, ISO: DE
+Angola (Angola): Poblacion: 36.7M (36,749,906), PIB: 119,574 M USD, PIB_pc: 3,156 USD, Deuda: 57.11%, IDH: 0.591, Tiles: 20, Capital: Luanda, ISO: AO
+Arabia Saudita (SaudiArabia): Poblacion: 35.3M (35,300,280), PIB: 1,067,583 M USD, PIB_pc: 30,243 USD, Deuda: N/D, IDH: N/D, Tiles: 18, Capital: Riyadh, ISO: SA
+Argelia (Algeria): Poblacion: 46M (45,973,000), PIB: 269,140 M USD, PIB_pc: 5,772 USD, Deuda: 48.07%, IDH: 0.745, Tiles: 15, Capital: Algiers, ISO: DZ
+Argentina (Argentina): Poblacion: 45.5M (45,538,401), PIB: 683,098 M USD, PIB_pc: 15,000 USD, Deuda: 84.65%, IDH: 0.849, Tiles: 28, Capital: Buenos Aires, ISO: AR
+Armenia (Armenia): Poblacion: 3.1M (3,076,252), PIB: 25,955 M USD, PIB_pc: 8,556 USD, Deuda: 49.96%, IDH: 0.786, Tiles: 3, Capital: Yerevan, ISO: AM
+Australia (Australia): Poblacion: 27.7M (27,730,000), PIB: 1,874,950 M USD, PIB_pc: 67,614 USD, Deuda: 50.61%, IDH: 0.946, Tiles: 29, Capital: Canberra, ISO: AU
+Austria (Austria): Poblacion: 9.2M (9,182,000), PIB: 581,182 M USD, PIB_pc: 63,296 USD, Deuda: 81.50%, IDH: 0.926, Tiles: 6, Capital: Vienna, ISO: AT
+Azerbaiyán (Azerbaijan): Poblacion: 10.4M (10,372,000), PIB: 74,426 M USD, PIB_pc: 7,262 USD, Deuda: 21.64%, IDH: 0.760, Tiles: 6, Capital: Baku, ISO: AZ
+Bangladés (Bangladesh): Poblacion: 172M (172,019,000), PIB: 450,461 M USD, PIB_pc: 2,619 USD, Deuda: 40.97%, IDH: 0.670, Tiles: 4, Capital: Dhaka, ISO: BD
+Baréin (Bahrain): Poblacion: 1.6M (1,589,000), PIB: 47,210 M USD, PIB_pc: 29,716 USD, Deuda: 133.67%, IDH: 0.888, Tiles: 1, Capital: Bahrain (B), ISO: BH
+Bélgica (Belgium): Poblacion: 12M (11,955,308), PIB: 725,466 M USD, PIB_pc: 61,051 USD, Deuda: 107.90%, IDH: 0.942, Tiles: 4, Capital: Brussels, ISO: BE
+Belice (Belize): Poblacion: 411K (411,000), PIB: 3,204 M USD, PIB_pc: 7,796 USD, Deuda: 65.44%, IDH: 0.700, Tiles: 4, Capital: Belmopan, ISO: BZ
+Benín (Benin): Poblacion: 14.5M (14,500,000), PIB: 21,487 M USD, PIB_pc: 1,482 USD, Deuda: 60.53%, IDH: 0.504, Tiles: 4, Capital: Parto-Novo, ISO: BJ
+Bielorrusia (Belarus): Poblacion: 9.1M (9,133,000), PIB: 78,847 M USD, PIB_pc: 8,634 USD, Deuda: 38.70%, IDH: 0.801, Tiles: 15, Capital: Minsk, ISO: BY
+Bolivia (Bolivia): Poblacion: 12.6M (12,582,000), PIB: 55,281 M USD, PIB_pc: 4,453 USD, Deuda: 83.22%, IDH: 0.698, Tiles: 8, Capital: La Paz, ISO: BO
+Bosnia y Herzegovina (BosniaANDHerzegovina): Poblacion: 3.4M (3,406,568), PIB: 32,672 M USD, PIB_pc: 9,591 USD, Deuda: 29.40%, IDH: 0.779, Tiles: 4, Capital: Sarajevo, ISO: BA
+Botsuana (Botswana): Poblacion: 2.5M (2,480,244), PIB: 19,356 M USD, PIB_pc: 7,678 USD, Deuda: 22.51%, IDH: 0.708, Tiles: 10, Capital: Gaborone, ISO: BW
+Brasil (Brazil): Poblacion: 213.4M (213,362,000), PIB: 2,185,822 M USD, PIB_pc: 10,282 USD, Deuda: 87.03%, IDH: 0.760, Tiles: 87, Capital: Brasilia, ISO: BR
+Bulgaria (Bulgaria): Poblacion: 6.4M (6,423,207), PIB: 131,098 M USD, PIB_pc: 20,365 USD, Deuda: 29.90%, IDH: 0.799, Tiles: 10, Capital: Sofia, ISO: BG
+Burkina Faso (BurkinaFaso): Poblacion: 23.6M (23,554,000), PIB: 23,130 M USD, PIB_pc: 982 USD, Deuda: 57.25%, IDH: 0.438, Tiles: 4, Capital: Ouagadougou, ISO: BF
+Burundi (Burundi): Poblacion: 14M (14,048,000), PIB: 4,838 M USD, PIB_pc: 344 USD, Deuda: 53.06%, IDH: 0.420, Tiles: 3, Capital: Gitega, ISO: BI
+Bután (Bhutan): Poblacion: 784K (784,000), PIB: 2,920 M USD, PIB_pc: 3,726 USD, Deuda: 108.72%, IDH: 0.681, Tiles: 2, Capital: Thimphu, ISO: BT
+Camboya (Cambodia): Poblacion: 17.4M (17,424,000), PIB: 46,300 M USD, PIB_pc: 2,674 USD, Deuda: 26.14%, IDH: 0.600, Tiles: 4, Capital: Phnom Penh, ISO: KH
+Camerún (Cameroon): Poblacion: 29.1M (29,124,000), PIB: 53,297 M USD, PIB_pc: 1,830 USD, Deuda: 43.41%, IDH: 0.587, Tiles: 7, Capital: Yaounde, ISO: CM
+Canadá (Canada): Poblacion: 41.7M (41,651,653), PIB: 2,321,182 M USD, PIB_pc: 55,728 USD, Deuda: 110.02%, IDH: 0.935, Tiles: 68, Capital: Ottawa, ISO: CA
+Catar (Qatar): Poblacion: 2.9M (2,857,822), PIB: 235,770 M USD, PIB_pc: 82,500 USD, Deuda: N/D, IDH: N/D, Tiles: 1, Capital: Qatar (Q), ISO: QA
+Chad (Chad): Poblacion: 19.3M (19,319,064), PIB: 20,656 M USD, PIB_pc: 1,120 USD, Deuda: 31.43%, IDH: 0.394, Tiles: 7, Capital: N'Djamena, ISO: TD
+Chile (Chile): Poblacion: 19.9M (19,904,000), PIB: 357,371 M USD, PIB_pc: 17,955 USD, Deuda: 41.65%, IDH: 0.860, Tiles: 11, Capital: Santiago, ISO: CL
+China (China): Poblacion: 1.41B (1,408,280,000), PIB: 18,743,802 M USD, PIB_pc: 13,453 USD, Deuda: 90.42%, IDH: 0.788, Tiles: 131, Capital: Beijing, ISO: CN
+Chipre (Cyprus): Poblacion: 983K (983,000), PIB: 41,043 M USD, PIB_pc: 41,753 USD, Deuda: 55.00%, IDH: 0.907, Tiles: 1, Capital: Nicosia, ISO: CY
+Colombia (Colombia): Poblacion: 53M (53,048,000), PIB: 457,410 M USD, PIB_pc: 8,623 USD, Deuda: 61.01%, IDH: 0.758, Tiles: 20, Capital: Bogota, ISO: CO
+Corea del Norte (NorthKorea): Poblacion: 26.5M (26,498,823), PIB: 18,000 M USD, PIB_pc: 680 USD, Deuda: N/D, IDH: N/D, Tiles: 7, Capital: Pyongyang, ISO: KP
+Corea del Sur (SouthKorea): Poblacion: 51.8M (51,751,065), PIB: 1,712,793 M USD, PIB_pc: 33,097 USD, Deuda: N/D, IDH: N/D, Tiles: 6, Capital: Seoul, ISO: KR
+Costa de Marfil (CoteDIvoire): Poblacion: 31.9M (31,934,230), PIB: 78,789 M USD, PIB_pc: 2,467 USD, Deuda: N/D, IDH: N/D, Tiles: 8, Capital: Yamoussoukkro, ISO: CI
+Costa Rica (CostaRica): Poblacion: 5.4M (5,370,000), PIB: 95,350 M USD, PIB_pc: 18,165 USD, Deuda: 58.91%, IDH: 0.806, Tiles: 4, Capital: San Jose, ISO: CR
+Croacia (Croatia): Poblacion: 3.9M (3,874,350), PIB: 105,060 M USD, PIB_pc: 27,117 USD, Deuda: 56.30%, IDH: 0.878, Tiles: 8, Capital: Zagreb, ISO: HR
+Cuba (Cuba): Poblacion: 11M (10,979,783), PIB: 107,352 M USD, PIB_pc: 9,777 USD, Deuda: N/D, IDH: N/D, Tiles: 6, Capital: Havana, ISO: CU
+Dinamarca (Denmark): Poblacion: 6M (6,025,603), PIB: 462,527 M USD, PIB_pc: 77,178 USD, Deuda: 27.90%, IDH: 0.952, Tiles: 13, Capital: Copenhagen, ISO: DK
+Ecuador (Ecuador): Poblacion: 18M (17,980,083), PIB: 123,802 M USD, PIB_pc: 6,891 USD, Deuda: 54.13%, IDH: 0.765, Tiles: 7, Capital: Quito, ISO: EC
+Egipto (Egypt): Poblacion: 106.6M (106,600,000), PIB: 383,105 M USD, PIB_pc: 3,594 USD, Deuda: 90.93%, IDH: 0.728, Tiles: 27, Capital: Cairo, ISO: EG
+El Salvador (ElSalvador): Poblacion: 6.3M (6,338,000), PIB: 35,365 M USD, PIB_pc: 5,580 USD, Deuda: 87.37%, IDH: 0.674, Tiles: 4, Capital: San Salvador, ISO: SV
+Emiratos Árabes Unidos (UnitedArabEmirates): Poblacion: 11M (10,986,400), PIB: 504,173 M USD, PIB_pc: 45,891 USD, Deuda: N/D, IDH: N/D, Tiles: 2, Capital: Dubai, ISO: AE
+Eritrea (Eritrea): Poblacion: 3.5M (3,470,390), PIB: 1,982 M USD, PIB_pc: 567 USD, Deuda: 179.66%, IDH: 0.493, Tiles: 2, Capital: Asmara, ISO: ER
+Eslovaquia (Slovakia): Poblacion: 5.4M (5,422,069), PIB: 132,794 M USD, PIB_pc: 24,491 USD, Deuda: N/D, IDH: N/D, Tiles: 3, Capital: Bratislava, ISO: SK
+Eslovenia (Slovenia): Poblacion: 2.1M (2,127,400), PIB: 68,217 M USD, PIB_pc: 32,066 USD, Deuda: N/D, IDH: N/D, Tiles: 4, Capital: Ljublana, ISO: SI
+España (Spain): Poblacion: 48.8M (48,848,840), PIB: 1,580,695 M USD, PIB_pc: 32,359 USD, Deuda: N/D, IDH: N/D, Tiles: 37, Capital: Madrid, ISO: ES
+Estados Unidos (UnitedStates): Poblacion: 340.1M (340,110,988), PIB: 27,360,935 M USD, PIB_pc: 80,447 USD, Deuda: N/D, IDH: N/D, Tiles: 126, Capital: Washington, ISO: US
+Estonia (Estonia): Poblacion: 1.4M (1,360,745), PIB: 47,031 M USD, PIB_pc: 34,354 USD, Deuda: 24.10%, IDH: 0.899, Tiles: 5, Capital: Tallinn, ISO: EE
+Etiopía (Ethiopia): Poblacion: 128.7M (128,691,692), PIB: 142,073 M USD, PIB_pc: 1,311 USD, Deuda: 33.38%, IDH: 0.492, Tiles: 18, Capital: Addis Abada, ISO: ET
+Filipinas (Philippines): Poblacion: 115.8M (115,843,670), PIB: 437,146 M USD, PIB_pc: 3,774 USD, Deuda: N/D, IDH: N/D, Tiles: 15, Capital: Manila, ISO: PH
+Finlandia (Finland): Poblacion: 5.6M (5,612,000), PIB: 317,039 M USD, PIB_pc: 56,493 USD, Deuda: 88.50%, IDH: 0.942, Tiles: 20, Capital: Helsinki, ISO: FI
+Francia (France): Poblacion: 68.9M (68,882,600), PIB: 3,379,843 M USD, PIB_pc: 49,067 USD, Deuda: 115.60%, IDH: 0.910, Tiles: 41, Capital: Paris, ISO: FR
+Gabón (Gabon): Poblacion: 2.5M (2,484,789), PIB: 20,900 M USD, PIB_pc: 9,258 USD, Deuda: 70.88%, IDH: 0.693, Tiles: 6, Capital: Libreville, ISO: GA
+Gambia (TheGambia): Poblacion: 2.7M (2,719,000), PIB: 2,405 M USD, PIB_pc: 884 USD, Deuda: 77.37%, IDH: 0.495, Tiles: 1, Capital: Banjul, ISO: GM
+Georgia (Georgia): Poblacion: 3.7M (3,694,000), PIB: 34,192 M USD, PIB_pc: 9,254 USD, Deuda: 35.66%, IDH: 0.814, Tiles: 5, Capital: Tbilisi, ISO: GE
+Ghana (Ghana): Poblacion: 33.8M (33,788,000), PIB: 83,289 M USD, PIB_pc: 2,419 USD, Deuda: 70.34%, IDH: 0.602, Tiles: 6, Capital: Accra, ISO: GH
+Grecia (Greece): Poblacion: 10.4M (10,366,586), PIB: 280,636 M USD, PIB_pc: 27,057 USD, Deuda: 146.10%, IDH: 0.893, Tiles: 19, Capital: Athens, ISO: GR
+Guatemala (Guatemala): Poblacion: 18.4M (18,406,000), PIB: 113,190 M USD, PIB_pc: 6,149 USD, Deuda: 26.32%, IDH: 0.629, Tiles: 4, Capital: Guatemala (G), ISO: GT
+Guayana Francesa (FrenchGuiana): Poblacion: 254.5K (254,541), PIB: 5,000 M USD, PIB_pc: 17,000 USD, Deuda: N/A, IDH: N/A, Tiles: 4, Capital: Cayenne, ISO: GF
+Guinea (Guinea): Poblacion: 14.4M (14,405,468), PIB: 24,233 M USD, PIB_pc: 1,572 USD, Deuda: 48.28%, IDH: 0.471, Tiles: 6, Capital: Conakry, ISO: GN
+Guinea Ecuatorial (EquatorialGuinea): Poblacion: 14.4M (14,405,468), PIB: 24,233 M USD, PIB_pc: 1,572 USD, Deuda: 48.28%, IDH: 0.471, Tiles: 1, Capital: Malabo, ISO: GQ
+Guinea-Bisáu (GuineaBissau): Poblacion: 2.2M (2,153,339), PIB: 2,218 M USD, PIB_pc: 1,030 USD, Deuda: 82.43%, IDH: 0.483, Tiles: 2, Capital: Bissau, ISO: GW
+Guyana (Guyana): Poblacion: 1M (1,004,000), PIB: 24,659 M USD, PIB_pc: 25,792 USD, Deuda: 24.31%, IDH: 0.742, Tiles: 4, Capital: Georgetown, ISO: GY
+Haití (Haiti): Poblacion: 11.6M (11,637,398), PIB: 25,285 M USD, PIB_pc: 2,041 USD, Deuda: 15.51%, IDH: 0.552, Tiles: 2, Capital: Port-au-Prince, ISO: HT
+Honduras (Honduras): Poblacion: 10.8M (10,826,000), PIB: 37,100 M USD, PIB_pc: 3,427 USD, Deuda: 41.50%, IDH: 0.624, Tiles: 4, Capital: Tegucigalpa, ISO: HN
+Hungría (Hungary): Poblacion: 9.6M (9,560,000), PIB: 246,490 M USD, PIB_pc: 25,784 USD, Deuda: 74.60%, IDH: 0.851, Tiles: 8, Capital: Budapest, ISO: HU
+India (India): Poblacion: 1.44B (1,438,069,596), PIB: 3,760,814 M USD, PIB_pc: 2,592 USD, Deuda: 84.78%, IDH: 0.644, Tiles: 50, Capital: New Delhi, ISO: IN
+Indonesia (Indonesia): Poblacion: 281.6M (281,604,000), PIB: 1,445,643 M USD, PIB_pc: 5,134 USD, Deuda: 40.17%, IDH: 0.713, Tiles: 38, Capital: Jakarta, ISO: ID
+Irak (Iraq): Poblacion: 45.1M (45,074,049), PIB: 286,523 M USD, PIB_pc: 6,451 USD, Deuda: 45.20%, IDH: 0.673, Tiles: 10, Capital: Baghdad, ISO: IQ
+Irán (Iran): Poblacion: 85.3M (85,329,000), PIB: 416,676 M USD, PIB_pc: 4,834 USD, Deuda: 31.23%, IDH: 0.780, Tiles: 34, Capital: Tehran, ISO: IR
+Irlanda (Ireland): Poblacion: 5.5M (5,510,565), PIB: 721,701 M USD, PIB_pc: 132,659 USD, Deuda: 32.90%, IDH: 0.950, Tiles: 13, Capital: Dublin, ISO: IE
+Islandia (Iceland): Poblacion: 389K (389,000), PIB: 38,583 M USD, PIB_pc: 99,184 USD, Deuda: 60.45%, IDH: 0.959, Tiles: 8, Capital: Reykjavik, ISO: IS
+Israel (Israel): Poblacion: 10.1M (10,123,000), PIB: 610,778 M USD, PIB_pc: 60,336 USD, Deuda: 67.67%, IDH: 0.915, Tiles: 6, Capital: Jerusalem, ISO: IL
+Italia (Italy): Poblacion: 58.9M (58,934,000), PIB: 2,551,557 M USD, PIB_pc: 43,295 USD, Deuda: 137.10%, IDH: 0.906, Tiles: 27, Capital: Rome, ISO: IT
+Jamaica (Jamaica): Poblacion: 2.8M (2,839,786), PIB: 21,900 M USD, PIB_pc: 7,965 USD, Deuda: 62.47%, IDH: 0.706, Tiles: 3, Capital: Kingston, ISO: JM
+Japón (Japan): Poblacion: 123.3M (123,291,000), PIB: 4,435,163 M USD, PIB_pc: 35,973 USD, Deuda: 214.49%, IDH: 0.920, Tiles: 23, Capital: Tokyo, ISO: JP
+Jordania (Jordan): Poblacion: 11.6M (11,553,000), PIB: 58,701 M USD, PIB_pc: 5,081 USD, Deuda: 82.12%, IDH: 0.736, Tiles: 2, Capital: Amman, ISO: JO
+Kazajistán (Kazakhstan): Poblacion: 20.2M (20,159,000), PIB: 291,480 M USD, PIB_pc: 14,459 USD, Deuda: 24.38%, IDH: 0.802, Tiles: 36, Capital: Astana, ISO: KZ
+Kenia (Kenya): Poblacion: 55.3M (55,339,003), PIB: 119,307 M USD, PIB_pc: 2,275 USD, Deuda: 67.34%, IDH: 0.601, Tiles: 8, Capital: Nairobi, ISO: KE
+Kirguistán (Kyrgyzstan): Poblacion: 7.2M (7,221,868), PIB: 13,988 M USD, PIB_pc: 1,937 USD, Deuda: N/D, IDH: N/D, Tiles: 4, Capital: Bishkek, ISO: KG
+Kuwait (Kuwait): Poblacion: 5M (5,012,000), PIB: 160,902 M USD, PIB_pc: 32,106 USD, Deuda: 2.91%, IDH: 0.847, Tiles: 1, Capital: Kuwait City, ISO: KW
+Laos (Laos): Poblacion: 7.7M (7,664,993), PIB: 15,792 M USD, PIB_pc: 2,055 USD, Deuda: 94.68%, IDH: 0.620, Tiles: 6, Capital: Vientiane, ISO: LA
+Letonia (Latvia): Poblacion: 1.9M (1,861,000), PIB: 48,619 M USD, PIB_pc: 26,125 USD, Deuda: 46.90%, IDH: 0.879, Tiles: 5, Capital: Riga, ISO: LV
+Líbano (Lebanon): Poblacion: 5.4M (5,354,000), PIB: 20,079 M USD, PIB_pc: 3,750 USD, Deuda: 157.85%, IDH: 0.723, Tiles: 4, Capital: Beirut, ISO: LB
+Liberia (Liberia): Poblacion: 5.7M (5,731,000), PIB: 4,778 M USD, PIB_pc: 851 USD, Deuda: 56.37%, IDH: 0.487, Tiles: 4, Capital: Monrovia, ISO: LR
+Libia (Libya): Poblacion: 7.4M (7,381,000), PIB: 48,487 M USD, PIB_pc: 6,569 USD, Deuda: 36.39%, IDH: 0.746, Tiles: 15, Capital: Tripoli, ISO: LY
+Lituania (Lithuania): Poblacion: 2.9M (2,891,000), PIB: 95,210 M USD, PIB_pc: 32,933 USD, Deuda: 39.50%, IDH: 0.879, Tiles: 6, Capital: Vilnius, ISO: LT
+Luxemburgo (Luxembourg): Poblacion: 682K (682,000), PIB: 101,158 M USD, PIB_pc: 148,325 USD, Deuda: 26.50%, IDH: 0.927, Tiles: 1, Capital: Luxemburg, ISO: LU
+Macedonia del Norte (NorthMacedonia): Poblacion: 1.8M (1,824,359), PIB: 14,761 M USD, PIB_pc: 8,091 USD, Deuda: N/D, IDH: N/D, Tiles: 3, Capital: Skopje, ISO: MK
+Madagascar (Madagascar): Poblacion: 31.2M (31,195,932), PIB: 17,593 M USD, PIB_pc: 575 USD, Deuda: 49.81%, IDH: 0.487, Tiles: 8, Capital: Antananarivo, ISO: MG
+Malasia (Malaysia): Poblacion: 33.9M (33,852,000), PIB: 422,227 M USD, PIB_pc: 12,619 USD, Deuda: 69.84%, IDH: 0.807, Tiles: 7, Capital: Kuala Lumpur, ISO: MY
+Malaui (Malawi): Poblacion: 22.7M (22,729,000), PIB: 11,790 M USD, PIB_pc: 504 USD, Deuda: 87.63%, IDH: 0.508, Tiles: 2, Capital: Lilongwe, ISO: MW
+Malí (Mali): Poblacion: 23.8M (23,769,000), PIB: 26,777 M USD, PIB_pc: 1,093 USD, Deuda: 44.03%, IDH: 0.410, Tiles: 18, Capital: Bamako, ISO: ML
+Malta (Malta): Poblacion: 563K (563,000), PIB: 27,772 M USD, PIB_pc: 49,328 USD, Deuda: 46.40%, IDH: 0.915, Tiles: 1, Capital: Valletta, ISO: MT
+Marruecos (Morocco): Poblacion: 37.4M (37,370,000), PIB: 160,606 M USD, PIB_pc: 4,298 USD, Deuda: 67.74%, IDH: 0.698, Tiles: 12, Capital: Rabat, ISO: MA
+Mauritania (Mauritania): Poblacion: 4.6M (4,629,000), PIB: 11,003 M USD, PIB_pc: 2,430 USD, Deuda: 48.60%, IDH: 0.540, Tiles: 14, Capital: Nouakchott, ISO: MR
+México (Mexico): Poblacion: 132.3M (132,274,000), PIB: 1,832,641 M USD, PIB_pc: 13,855 USD, Deuda: 59.14%, IDH: 0.781, Tiles: 35, Capital: Mexico City, ISO: MX
+Moldavia (Moldova): Poblacion: 2.4M (2,381,325), PIB: 20,390 M USD, PIB_pc: 8,563 USD, Deuda: 38.78%, IDH: 0.763, Tiles: 4, Capital: Chisinau, ISO: MD
+Mongolia (Mongolia): Poblacion: 3.5M (3,545,000), PIB: 23,795 M USD, PIB_pc: 6,712 USD, Deuda: 44.09%, IDH: 0.741, Tiles: 10, Capital: Ulaanbaatar, ISO: MN
+Montenegro (Montenegro): Poblacion: 623.3K (623,327), PIB: 9,233 M USD, PIB_pc: 14,812 USD, Deuda: 60.76%, IDH: 0.844, Tiles: 2, Capital: Podgorica, ISO: ME
+Mozambique (Mozambique): Poblacion: 33.6M (33,635,160), PIB: 22,745 M USD, PIB_pc: 676 USD, Deuda: 90.83%, IDH: 0.461, Tiles: 16, Capital: Maputo, ISO: MZ
+Myanmar (Myanmar): Poblacion: 54.7M (54,652,000), PIB: 74,068 M USD, PIB_pc: 1,355 USD, Deuda: 48.72%, IDH: 0.608, Tiles: 18, Capital: Nay Pyi Taw, ISO: MM
+Namibia (Namibia): Poblacion: 2.9M (2,928,000), PIB: 13,370 M USD, PIB_pc: 4,472 USD, Deuda: 69.84%, IDH: 0.610, Tiles: 9, Capital: Windhoek, ISO: NA
+Nepal (Nepal): Poblacion: 29.7M (29,695,000), PIB: 42,914 M USD, PIB_pc: 1,447 USD, Deuda: 48.33%, IDH: 0.601, Tiles: 2, Capital: Kathmandu, ISO: NP
+Nicaragua (Nicaragua): Poblacion: 6.7M (6,664,000), PIB: 19,697 M USD, PIB_pc: 2,955 USD, Deuda: 37.87%, IDH: 0.669, Tiles: 4, Capital: Managua, ISO: NI
+Níger (Niger): Poblacion: 27.1M (27,066,000), PIB: 19,876 M USD, PIB_pc: 734 USD, Deuda: 47.74%, IDH: 0.394, Tiles: 11, Capital: Niamey, ISO: NE
+Nigeria (Nigeria): Poblacion: 227.9M (227,882,945), PIB: 252,109 M USD, PIB_pc: 1,084 USD, Deuda: 39.33%, IDH: 0.548, Tiles: 15, Capital: Abuja, ISO: NG
+Noruega (Norway): Poblacion: 5.6M (5,618,000), PIB: 530,756 M USD, PIB_pc: 94,474 USD, Deuda: 52.82%, IDH: 0.966, Tiles: 24, Capital: Oslo, ISO: NO
+Nueva Zelanda (NewZealand): Poblacion: 5.3M (5,324,000), PIB: 261,496 M USD, PIB_pc: 49,117 USD, Deuda: 51.43%, IDH: 0.939, Tiles: 7, Capital: Wellington, ISO: NZ
+Omán (Oman): Poblacion: 5.3M (5,307,000), PIB: 107,137 M USD, PIB_pc: 20,529 USD, Deuda: 35.45%, IDH: 0.819, Tiles: 6, Capital: Muscat, ISO: OM
+Países Bajos (Netherlands): Poblacion: 18M (18,044,000), PIB: 1,332,768 M USD, PIB_pc: 73,862 USD, Deuda: 44.40%, IDH: 0.946, Tiles: 7, Capital: Amsterdam, ISO: NL
+Pakistán (Pakistan): Poblacion: 235.9M (235,950,000), PIB: 372,243 M USD, PIB_pc: 1,578 USD, Deuda: 70.22%, IDH: 0.540, Tiles: 16, Capital: Islamabad, ISO: PK
+Panamá (Panama): Poblacion: 4.5M (4,453,000), PIB: 86,524 M USD, PIB_pc: 19,187 USD, Deuda: 57.81%, IDH: 0.820, Tiles: 4, Capital: Panama City, ISO: PA
+Papúa Nueva Guinea (PapuaNewGuinea): Poblacion: 12.5M (12,539,000), PIB: 30,756 M USD, PIB_pc: 2,453 USD, Deuda: 53.34%, IDH: 0.568, Tiles: 7, Capital: Port Moresby, ISO: PG
+Paraguay (Paraguay): Poblacion: 6.4M (6,373,000), PIB: 44,739 M USD, PIB_pc: 7,020 USD, Deuda: 44.63%, IDH: 0.731, Tiles: 4, Capital: Asuncion, ISO: PY
+Perú (Peru): Poblacion: 33.8M (33,845,617), PIB: 295,220 M USD, PIB_pc: 8,666 USD, Deuda: 32.08%, IDH: 0.762, Tiles: 12, Capital: Lima, ISO: PE
+Polonia (Poland): Poblacion: 36.5M (36,497,000), PIB: 1,040,455 M USD, PIB_pc: 28,508 USD, Deuda: 59.70%, IDH: 0.881, Tiles: 17, Capital: Warsaw, ISO: PL
+Portugal (Portugal): Poblacion: 11.4M (11,424,031), PIB: 346,613 M USD, PIB_pc: 32,183 USD, Deuda: 89.70%, IDH: 0.874, Tiles: 10, Capital: Lisbon, ISO: PT
+Reino Unido (UnitedKingdom): Poblacion: 69.6M (69,554,275), PIB: 3,994,694 M USD, PIB_pc: 57,490 USD, Deuda: 99.90%, IDH: 0.940, Tiles: 28, Capital: London, ISO: GB
+República Centroafricana (CentralAfricanRepublic): Poblacion: 5.3M (5,331,000), PIB: 2,751 M USD, PIB_pc: 516 USD, Deuda: 59.88%, IDH: 0.387, Tiles: 9, Capital: Bangui, ISO: CF
+República Checa (CzechRepublic): Poblacion: 10.9M (10,915,839), PIB: 391,027 M USD, PIB_pc: 35,861 USD, Deuda: 44.30%, IDH: 0.895, Tiles: 11, Capital: Prague, ISO: CZ
+República del Congo (RepublicoftheCongo): Poblacion: 103.2M (103,197,000), PIB: 70,962 M USD, PIB_pc: 688 USD, Deuda: 15.69%, IDH: 0.481, Tiles: 30, Capital: Kinshasa, ISO: CG
+República Dominicana (DominicanRepublic): Poblacion: 10.8M (10,797,000), PIB: 124,613 M USD, PIB_pc: 11,542 USD, Deuda: 58.79%, IDH: 0.766, Tiles: 2, Capital: Santa Domingo, ISO: DO
+Ruanda (Rwanda): Poblacion: 14M (13,954,471), PIB: 15,111 M USD, PIB_pc: 1,090 USD, Deuda: 63.39%, IDH: 0.548, Tiles: 3, Capital: Kigali, ISO: RW
+Rumanía (Romania): Poblacion: 18.8M (18,832,000), PIB: 428,675 M USD, PIB_pc: 22,763 USD, Deuda: 59.30%, IDH: 0.827, Tiles: 14, Capital: Bucharest, ISO: RO
+Rusia (Russia): Poblacion: 144M (143,997,000), PIB: 2,185,848 M USD, PIB_pc: 15,094 USD, Deuda: 14.76%, IDH: 0.821, Tiles: 139, Capital: Moscow, ISO: RU
+Sáhara Occidental (Western Sahara): Poblacion: 510.7K (510,713), PIB: N/D M USD, PIB_pc: N/D USD, Deuda: N/A, IDH: N/A, Tiles: 5, Capital: Laayoune, ISO: EH
+Senegal (Senegal): Poblacion: 19.2M (19,173,000), PIB: 32,829 M USD, PIB_pc: 1,759 USD, Deuda: 132.40%, IDH: 0.517, Tiles: 8, Capital: Dakar, ISO: SN
+Serbia (Serbia): Poblacion: 6.6M (6,567,783), PIB: 99,953 M USD, PIB_pc: 15,219 USD, Deuda: 44.06%, IDH: 0.805, Tiles: 9, Capital: Belgrade, ISO: RS
+Sierra Leona (SierraLeone): Poblacion: 8.6M (8,642,000), PIB: 6,970 M USD, PIB_pc: 807 USD, Deuda: 46.67%, IDH: 0.458, Tiles: 4, Capital: Freetown, ISO: SL
+Siria (Syria): Poblacion: 23.6M (23,594,623), PIB: 19,993 M USD, PIB_pc: 847 USD, Deuda: 31.21%, IDH: 0.557, Tiles: 6, Capital: Damascus, ISO: SY
+Somalia (Somalia): Poblacion: 23.8M (23,769,000), PIB: 26,777 M USD, PIB_pc: 1,093 USD, Deuda: 44.03%, IDH: 0.410, Tiles: 9, Capital: Mogadishu, ISO: SO
+Sri Lanka (SriLanka): Poblacion: 21.9M (21,916,000), PIB: 98,964 M USD, PIB_pc: 4,516 USD, Deuda: 100.84%, IDH: 0.780, Tiles: 1, Capital: Colombo, ISO: LK
+Sudáfrica (SouthAfrica): Poblacion: 62.3M (62,329,000), PIB: 427,184 M USD, PIB_pc: 6,854 USD, Deuda: 75.96%, IDH: 0.717, Tiles: 16, Capital: Cape Town, ISO: ZA
+Sudán (Sudan): Poblacion: 50.4M (50,448,963), PIB: 109,327 M USD, PIB_pc: 2,167 USD, Deuda: N/D, IDH: N/D, Tiles: 18, Capital: Khartoum, ISO: SD
+Sudán del Sur (SouthSudan): Poblacion: 11.9M (11,943,408), PIB: 11,998 M USD, PIB_pc: 1,005 USD, Deuda: N/D, IDH: N/D, Tiles: 4, Capital: Juba, ISO: SS
+Suecia (Sweden): Poblacion: 10.6M (10,569,709), PIB: 593,268 M USD, PIB_pc: 56,129 USD, Deuda: N/D, IDH: N/D, Tiles: 18, Capital: Stockholm, ISO: SE
+Suiza (Switzerland): Poblacion: 9M (9,005,582), PIB: 884,940 M USD, PIB_pc: 98,266 USD, Deuda: N/D, IDH: N/D, Tiles: 5, Capital: Bern, ISO: CH
+Surinam (Suriname): Poblacion: 634.4K (634,431), PIB: 3,782 M USD, PIB_pc: 5,962 USD, Deuda: N/D, IDH: N/D, Tiles: 4, Capital: Paramaribo, ISO: SR
+Tailandia (Thailand): Poblacion: 71.7M (71,668,011), PIB: 514,945 M USD, PIB_pc: 7,185 USD, Deuda: N/D, IDH: N/D, Tiles: 17, Capital: Bankok, ISO: TH
+Taiwán (Taiwan): Poblacion: 23.5M (23,503,349), PIB: 750,000 M USD, PIB_pc: 32,000 USD, Deuda: N/D, IDH: 0.926, Tiles: 1, Capital: Taipei, ISO: TW
+Tanzania (Tanzania): Poblacion: 68.6M (68,560,157), PIB: 79,158 M USD, PIB_pc: 1,155 USD, Deuda: N/D, IDH: N/D, Tiles: 13, Capital: Dodoma, ISO: TZ
+Tayikistán (Tajikistan): Poblacion: 10.6M (10,590,927), PIB: 12,061 M USD, PIB_pc: 1,139 USD, Deuda: N/D, IDH: N/D, Tiles: 4, Capital: Dushanbe, ISO: TJ
+Timor Oriental (EastTimor): Poblacion: 1.4M (1,400,638), PIB: 2,243 M USD, PIB_pc: 1,602 USD, Deuda: N/D, IDH: N/D, Tiles: 1, Capital: Dili, ISO: TL
+Togo (Togo): Poblacion: 9.5M (9,515,236), PIB: 9,171 M USD, PIB_pc: 964 USD, Deuda: N/D, IDH: N/D, Tiles: 4, Capital: Lome, ISO: TG
+Túnez (Tunisia): Poblacion: 12.3M (12,277,109), PIB: 48,530 M USD, PIB_pc: 3,953 USD, Deuda: N/D, IDH: N/D, Tiles: 4, Capital: Gab�s, ISO: TN
+Turkmenistán (Turkmenistan): Poblacion: 7.5M (7,494,498), PIB: 59,887 M USD, PIB_pc: 7,991 USD, Deuda: N/D, IDH: N/D, Tiles: 12, Capital: Ashgabat, ISO: TM
+Turquía (Turkey): Poblacion: 85.5M (85,518,661), PIB: 1,108,022 M USD, PIB_pc: 12,956 USD, Deuda: N/D, IDH: N/D, Tiles: 42, Capital: Ankara, ISO: TR
+Ucrania (Ukraine): Poblacion: 37.9M (37,860,221), PIB: 178,757 M USD, PIB_pc: 4,721 USD, Deuda: N/D, IDH: N/D, Tiles: 41, Capital: Kyiv, ISO: UA
+Uganda (Uganda): Poblacion: 50M (50,015,092), PIB: 49,273 M USD, PIB_pc: 985 USD, Deuda: N/D, IDH: N/D, Tiles: 6, Capital: Kampala, ISO: UG
+Unión de Estados del Caribe (módulo) (The Union of Caribbean States): Poblacion: N/D, PIB: N/D M USD, PIB_pc: N/D USD, Deuda: N/A, IDH: N/A, Tiles: 20, Capital: Plymouth, ISO: UN
+Uruguay (Uruguay): Poblacion: 3.4M (3,386,588), PIB: 77,241 M USD, PIB_pc: 22,808 USD, Deuda: N/D, IDH: N/D, Tiles: 6, Capital: Montevideo, ISO: UY
+Uzbekistán (Uzbekistan): Poblacion: 36.4M (36,361,859), PIB: 90,889 M USD, PIB_pc: 2,500 USD, Deuda: N/D, IDH: N/D, Tiles: 24, Capital: Tashkent, ISO: UZ
+Venezuela (Venezuela): Poblacion: 28.4M (28,405,543), PIB: 482,359 M USD, PIB_pc: 16,981 USD, Deuda: N/D, IDH: N/D, Tiles: 22, Capital: Caracas, ISO: VE
+Vietnam (Vietnam): Poblacion: 101M (100,987,686), PIB: 429,717 M USD, PIB_pc: 4,255 USD, Deuda: N/D, IDH: N/D, Tiles: 18, Capital: Hanoi, ISO: VN
+Yemen (Yemen): Poblacion: 40.6M (40,583,164), PIB: 21,606 M USD, PIB_pc: 532 USD, Deuda: N/D, IDH: N/D, Tiles: 7, Capital: Sana, ISO: YE
+Yibuti (Djibouti): Poblacion: 1.2M (1,168,722), PIB: 4,099 M USD, PIB_pc: 3,507 USD, Deuda: N/D, IDH: N/D, Tiles: 1, Capital: Djibouti (D), ISO: DJ
+Zambia (Zambia): Poblacion: 21.3M (21,314,956), PIB: 28,163 M USD, PIB_pc: 1,321 USD, Deuda: N/D, IDH: N/D, Tiles: 12, Capital: Lusaka, ISO: ZM
+Zimbabue (Zimbabwe): Poblacion: 16.6M (16,634,373), PIB: 26,538 M USD, PIB_pc: 1,595 USD, Deuda: N/D, IDH: N/D, Tiles: 8, Capital: Harare, ISO: ZW
+
+================================================================================
+RESUMEN RÁPIDO (solo población formateada)
+================================================================================
+Afganistán: Poblacion: 43.8M
+Albania: Poblacion: 2.4M
+Alemania: Poblacion: 83.5M
+Angola: Poblacion: 36.7M
+Arabia Saudita: Poblacion: 35.3M
+Argelia: Poblacion: 46M
+Argentina: Poblacion: 45.5M
+Armenia: Poblacion: 3.1M
+Australia: Poblacion: 27.7M
+Austria: Poblacion: 9.2M
+Azerbaiyán: Poblacion: 10.4M
+Bangladés: Poblacion: 172M
+Baréin: Poblacion: 1.6M
+Bélgica: Poblacion: 12M
+Belice: Poblacion: 411K
+Benín: Poblacion: 14.5M
+Bielorrusia: Poblacion: 9.1M
+Bolivia: Poblacion: 12.6M
+Bosnia y Herzegovina: Poblacion: 3.4M
+Botsuana: Poblacion: 2.5M
+Brasil: Poblacion: 213.4M
+Bulgaria: Poblacion: 6.4M
+Burkina Faso: Poblacion: 23.6M
+Burundi: Poblacion: 14M
+Bután: Poblacion: 784K
+Camboya: Poblacion: 17.4M
+Camerún: Poblacion: 29.1M
+Canadá: Poblacion: 41.7M
+Catar: Poblacion: 2.9M
+Chad: Poblacion: 19.3M
+Chile: Poblacion: 19.9M
+China: Poblacion: 1.41B
+Chipre: Poblacion: 983K
+Colombia: Poblacion: 53M
+Corea del Norte: Poblacion: 26.5M
+Corea del Sur: Poblacion: 51.8M
+Costa de Marfil: Poblacion: 31.9M
+Costa Rica: Poblacion: 5.4M
+Croacia: Poblacion: 3.9M
+Cuba: Poblacion: 11M
+Dinamarca: Poblacion: 6M
+Ecuador: Poblacion: 18M
+Egipto: Poblacion: 106.6M
+El Salvador: Poblacion: 6.3M
+Emiratos Árabes Unidos: Poblacion: 11M
+Eritrea: Poblacion: 3.5M
+Eslovaquia: Poblacion: 5.4M
+Eslovenia: Poblacion: 2.1M
+España: Poblacion: 48.8M
+Estados Unidos: Poblacion: 340.1M
+Estonia: Poblacion: 1.4M
+Etiopía: Poblacion: 128.7M
+Filipinas: Poblacion: 115.8M
+Finlandia: Poblacion: 5.6M
+Francia: Poblacion: 68.9M
+Gabón: Poblacion: 2.5M
+Gambia: Poblacion: 2.7M
+Georgia: Poblacion: 3.7M
+Ghana: Poblacion: 33.8M
+Grecia: Poblacion: 10.4M
+Guatemala: Poblacion: 18.4M
+Guayana Francesa: Poblacion: 254.5K
+Guinea: Poblacion: 14.4M
+Guinea Ecuatorial: Poblacion: 14.4M
+Guinea-Bisáu: Poblacion: 2.2M
+Guyana: Poblacion: 1M
+Haití: Poblacion: 11.6M
+Honduras: Poblacion: 10.8M
+Hungría: Poblacion: 9.6M
+India: Poblacion: 1.44B
+Indonesia: Poblacion: 281.6M
+Irak: Poblacion: 45.1M
+Irán: Poblacion: 85.3M
+Irlanda: Poblacion: 5.5M
+Islandia: Poblacion: 389K
+Israel: Poblacion: 10.1M
+Italia: Poblacion: 58.9M
+Jamaica: Poblacion: 2.8M
+Japón: Poblacion: 123.3M
+Jordania: Poblacion: 11.6M
+Kazajistán: Poblacion: 20.2M
+Kenia: Poblacion: 55.3M
+Kirguistán: Poblacion: 7.2M
+Kuwait: Poblacion: 5M
+Laos: Poblacion: 7.7M
+Letonia: Poblacion: 1.9M
+Líbano: Poblacion: 5.4M
+Liberia: Poblacion: 5.7M
+Libia: Poblacion: 7.4M
+Lituania: Poblacion: 2.9M
+Luxemburgo: Poblacion: 682K
+Macedonia del Norte: Poblacion: 1.8M
+Madagascar: Poblacion: 31.2M
+Malasia: Poblacion: 33.9M
+Malaui: Poblacion: 22.7M
+Malí: Poblacion: 23.8M
+Malta: Poblacion: 563K
+Marruecos: Poblacion: 37.4M
+Mauritania: Poblacion: 4.6M
+México: Poblacion: 132.3M
+Moldavia: Poblacion: 2.4M
+Mongolia: Poblacion: 3.5M
+Montenegro: Poblacion: 623.3K
+Mozambique: Poblacion: 33.6M
+Myanmar: Poblacion: 54.7M
+Namibia: Poblacion: 2.9M
+Nepal: Poblacion: 29.7M
+Nicaragua: Poblacion: 6.7M
+Níger: Poblacion: 27.1M
+Nigeria: Poblacion: 227.9M
+Noruega: Poblacion: 5.6M
+Nueva Zelanda: Poblacion: 5.3M
+Omán: Poblacion: 5.3M
+Países Bajos: Poblacion: 18M
+Pakistán: Poblacion: 235.9M
+Panamá: Poblacion: 4.5M
+Papúa Nueva Guinea: Poblacion: 12.5M
+Paraguay: Poblacion: 6.4M
+Perú: Poblacion: 33.8M
+Polonia: Poblacion: 36.5M
+Portugal: Poblacion: 11.4M
+Reino Unido: Poblacion: 69.6M
+República Centroafricana: Poblacion: 5.3M
+República Checa: Poblacion: 10.9M
+República del Congo: Poblacion: 103.2M
+República Dominicana: Poblacion: 10.8M
+Ruanda: Poblacion: 14M
+Rumanía: Poblacion: 18.8M
+Rusia: Poblacion: 144M
+Sáhara Occidental: Poblacion: 510.7K
+Senegal: Poblacion: 19.2M
+Serbia: Poblacion: 6.6M
+Sierra Leona: Poblacion: 8.6M
+Siria: Poblacion: 23.6M
+Somalia: Poblacion: 23.8M
+Sri Lanka: Poblacion: 21.9M
+Sudáfrica: Poblacion: 62.3M
+Sudán: Poblacion: 50.4M
+Sudán del Sur: Poblacion: 11.9M
+Suecia: Poblacion: 10.6M
+Suiza: Poblacion: 9M
+Surinam: Poblacion: 634.4K
+Tailandia: Poblacion: 71.7M
+Taiwán: Poblacion: 23.5M
+Tanzania: Poblacion: 68.6M
+Tayikistán: Poblacion: 10.6M
+Timor Oriental: Poblacion: 1.4M
+Togo: Poblacion: 9.5M
+Túnez: Poblacion: 12.3M
+Turkmenistán: Poblacion: 7.5M
+Turquía: Poblacion: 85.5M
+Ucrania: Poblacion: 37.9M
+Uganda: Poblacion: 50M
+Unión de Estados del Caribe (módulo): Poblacion: N/D
+Uruguay: Poblacion: 3.4M
+Uzbekistán: Poblacion: 36.4M
+Venezuela: Poblacion: 28.4M
+Vietnam: Poblacion: 101M
+Yemen: Poblacion: 40.6M
+Yibuti: Poblacion: 1.2M
+Zambia: Poblacion: 21.3M
+Zimbabue: Poblacion: 16.6M
+
+================================================================================
+NOTAS
+- 2025* = serie de referencia del dossier/juego; World Bank puede ser 2022–2024 según serie.
+- The Union of Caribbean States: bloque ficticio del módulo (sin población soberana).
+- Western Sahara / French Guiana: entidades especiales.
+================================================================================

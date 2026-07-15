@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Combinar países — Atlas v6</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="assets/common.css"/>
+<link rel="stylesheet" href="assets/common_v6_append.css"/>
+<style>
+  .combo-layout{display:grid;grid-template-columns:300px 1.25fr 1fr;gap:14px;min-height:70vh}
+  @media(max-width:1100px){.combo-layout{grid-template-columns:1fr}}
+  .pick-panel,.map-panel,.res-panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column}
+  .pick-panel h2,.map-panel h2,.res-panel h2{margin:0;padding:12px 14px;font-size:.95rem;border-bottom:1px solid var(--line);background:var(--card-head)}
+  .pick-body{padding:10px;overflow:auto;flex:1;max-height:62vh}
+  #search{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;font-size:.9rem;background:var(--panel);color:var(--ink)}
+  .pick{display:flex;gap:8px;align-items:flex-start;padding:8px;border-radius:10px;cursor:pointer;border:1px solid transparent;margin-bottom:4px}
+  .pick:hover{background:var(--soft)}
+  .pick.on{background:#eef6ff;border-color:#93c5fd}
+  .pick input{margin-top:4px}
+  .pick b{display:block;font-size:.88rem}
+  .pick small{color:var(--muted);font-size:.72rem}
+  .pick .sw{width:12px;height:12px;border-radius:3px;border:1px solid var(--line);margin-top:4px;flex-shrink:0}
+  #map{height:440px;width:100%;background:var(--ocean)}
+  .map-tools{padding:10px 12px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px;border-bottom:1px solid var(--line);min-height:44px}
+  .chip{display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border-radius:999px;border:2px solid var(--line);font-size:.78rem;font-weight:700;background:var(--panel);color:var(--ink)}
+  .chip i{width:10px;height:10px;border-radius:50%;display:inline-block}
+  .chip button{border:0;background:transparent;cursor:pointer;font-size:.95rem;line-height:1;color:var(--muted);padding:0 2px}
+  .modes{display:flex;gap:10px;flex-wrap:wrap;font-size:.85rem}
+  .modes label{display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:600}
+  #results{padding:12px;overflow:auto;flex:1;max-height:58vh}
+  .empty,.muted{color:var(--muted);font-size:.9rem}
+  .grid-table{width:100%;border-collapse:collapse;font-size:.78rem}
+  .grid-table th,.grid-table td{padding:6px;border-bottom:1px solid var(--line);text-align:left;color:var(--ink)}
+  .grid-table th{color:var(--muted);font-size:.68rem;text-transform:uppercase}
+  .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:middle}
+  .combo-card{margin-top:12px;background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:12px}
+  .combo-card h3{margin:0 0 10px;font-size:.95rem}
+  .combo-card .stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .combo-card .stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px}
+  .combo-card .k{font-size:.65rem;text-transform:uppercase;color:var(--muted);font-weight:700}
+  .combo-card .v{font-size:1.1rem;font-weight:800;margin-top:2px}
+  .war-banner{padding:12px;border-radius:12px;margin:10px 0;font-size:.95rem}
+  .war-banner.win{background:#ecfdf5;border:1px solid #6ee7b7;color:#065f46}
+  .war-banner.tie{background:#fff7ed;border:1px solid #fdba74;color:#9a3412}
+  .score-list{margin:10px 0}
+  .score-row{margin-bottom:10px}
+  .score-head{display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:4px}
+  .bar{height:10px;background:var(--line);border-radius:999px;overflow:hidden}
+  .bar i{display:block;height:100%;border-radius:999px;transition:width .45s ease}
+  .note{font-size:.75rem;color:var(--muted);margin:10px 0 0}
+  .presets{display:flex;flex-wrap:wrap;gap:6px;padding:0 0 10px}
+  .presets button,.btn-mini{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:6px 10px;font-size:.75rem;cursor:pointer;font-weight:600}
+  .presets button:hover,.btn-mini:hover{border-color:#93c5fd}
+  .map-btns{display:flex;flex-wrap:wrap;gap:6px}
+  .city-marker-root{background:transparent!important;border:none!important}
+  .c-wrap{position:relative;text-align:center}
+  .c-name{position:absolute;left:50%;transform:translateX(-50%);top:12px;font:700 10px/1.1 "Segoe UI",Arial,sans-serif;color:var(--ink);text-shadow:0 0 3px #fff,0 0 3px #fff;white-space:nowrap;max-width:90px;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+  .c-name.cap{color:var(--capital);font-size:11px;top:14px}
+  .map-panel .terrain-panel{position:relative;right:auto;top:auto;max-width:none;margin:0;border-radius:0;border-left:0;border-right:0;border-bottom:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">
+      <div>
+        <h1 style="text-transform:none;margin:0;font-size:1.6rem">Combinar países</h1>
+        <div class="sub">Lazy load · Charts · Guerra · Simulador · Share · v6</div>
+      </div>
+    </div>
+    <div class="nav toolbar-v6">
+      <a href="index.html">← Índice</a>
+      <a href="comparar.html">⧉ Comparar 2</a>
+      <a href="quiz.html">🧠 Quiz</a>
+      <span class="badge" id="selCount">0 seleccionados</span>
+      <button class="btn-mini" type="button" id="btnClear">Limpiar</button>
+      <button class="btn-mini" type="button" id="btnShare">🔗 Copiar enlace</button>
+      <button class="btn-mini" type="button" id="btnTweet">𝕏 Twitter</button>
+      <button class="btn-mini" type="button" id="btnExport">📷 PNG</button>
+      <button class="btn" type="button" id="btnTheme">🌙</button>
+      <button class="btn" type="button" id="btnLang">EN</button>
+    </div>
+  </div>
+
+  <div class="presets">
+    <span class="muted" style="font-size:.8rem;align-self:center">Presets:</span>
+    <button type="button" id="btnFRIT">🇫🇷 + 🇮🇹 Francia · Italia</button>
+    <button type="button" id="btnUK">🇬🇧 🇫🇷 🇩🇪 UK · FR · DE</button>
+    <button type="button" id="btnBRAR">🇧🇷 🇦🇷 🇨🇱 Sudamérica</button>
+    <button type="button" id="btnTour">🌍 Tour 5 grandes</button>
+  </div>
+
+  <div class="combo-layout" id="main">
+    <section class="pick-panel" aria-label="Selección de países">
+      <h2>Elegir países (hasta 8)</h2>
+      <div class="pick-body">
+        <input id="search" type="search" placeholder="Buscar país…" aria-label="Buscar"/>
+        <div id="countryList"><p class="muted">Cargando índice ligero…</p></div>
+      </div>
+    </section>
+
+    <section class="map-panel" aria-label="Mapa combinado">
+      <h2>Mapa combinado + ciudades</h2>
+      <div class="chips" id="chips"></div>
+      <div id="map" role="img" aria-label="Mapa combinado"></div>
+      <div id="terrainPanel" class="terrain-panel"></div>
+      <div class="map-tools">
+        <div class="modes">
+          <label><input type="radio" name="mode" value="alliance" checked/> Alianza</label>
+          <label><input type="radio" name="mode" value="war"/> Guerra / ranking</label>
+          <label><input type="radio" name="mode" value="sim"/> Simulador turnos</label>
+        </div>
+        <div class="map-btns">
+          <button type="button" class="btn-mini" id="btnToggleCities">Ocultar ciudades</button>
+          <button type="button" class="btn-mini" id="btnToggleNames">Ocultar nombres</button>
+          <button type="button" class="btn-mini" id="btnToggleBorders">Ocultar contornos</button>
+          <button type="button" class="btn-mini" id="btnOutline">Solo contornos</button>
+          <button type="button" class="btn-mini" id="btnCluster">Cluster ciudades</button>
+          <label class="btn-mini" style="display:inline-flex;align-items:center;gap:4px;cursor:pointer">
+            Heatmap
+            <select id="heatMetric" aria-label="Métrica heatmap" style="border:0;background:transparent;color:inherit;font-weight:700;max-width:110px">
+              <option value="off">Off</option>
+              <option value="poblacion">Población</option>
+              <option value="pib">PIB</option>
+              <option value="pib_pc">PIB/c</option>
+              <option value="idh">IDH</option>
+              <option value="power">Poder</option>
+              <option value="area">Área</option>
+              <option value="tiles">Tiles</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <p class="note" style="padding:0 12px 10px">
+        Contornos se descargan solo al seleccionar (no +5 MB de golpe). Arrastra chips para reordenar.
+        Chip 🔍 = zoom. 🏙 = ciudades. Internet para satélite/relieve.
+      </p>
+    </section>
+
+    <section class="res-panel" aria-label="Resultados">
+      <h2 id="resultsTitle">Resultados</h2>
+      <div id="results"></div>
+    </section>
+  </div>
+
+  <p class="footer" style="margin-top:16px;text-align:center">
+    v6 lazy · Chart.js · html2canvas · proxies militares educativos · DataPaises
+  </p>
+</div>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="assets/core.js"></script>
+<script src="assets/extras.js"></script>
+<script src="assets/terrain_layers.js"></script>
+<script src="assets/combo-v2.js"></script>
+</body>
+</html>

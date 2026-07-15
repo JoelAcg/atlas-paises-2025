@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Atlas país — 2025</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="assets/common.css"/>
+<link rel="stylesheet" href="assets/common_v6_append.css"/>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">
+      <div class="flag-wrap"><img id="flagImg" src="" alt="" loading="lazy"/></div>
+      <div>
+        <h1 id="titleName">…</h1>
+        <div class="sub" id="subLine">Cargando ficha…</div>
+      </div>
+    </div>
+    <div class="nav toolbar-v6">
+      <a href="index.html" id="linkIndex">← Índice</a>
+      <a href="combinar.html">⚔ Combinar</a>
+      <a href="quiz.html">🧠 Quiz</a>
+      <select id="countryJump" aria-label="Ir a país" style="max-width:180px;border-radius:999px;padding:8px 10px;border:1px solid var(--line);background:var(--panel);color:var(--ink)"></select>
+      <button class="btn" type="button" id="toggleLabels">Ocultar nombres</button>
+      <button class="btn" type="button" id="toggleRegions">Ocultar regiones</button>
+      <button class="btn" type="button" id="btnExport">📷 PNG</button>
+      <button class="btn" type="button" id="btnShare">🔗 Compartir</button>
+      <button class="btn" type="button" id="btnTweet">𝕏</button>
+      <button class="btn" type="button" id="btnFav">☆ Favorito</button>
+      <button class="btn" type="button" id="btnWiki">Wikipedia</button>
+      <a class="btn" href="comparar.html">⧉ Comparar</a>
+      <button class="btn" type="button" id="btnTheme" aria-label="Tema">🌙</button>
+      <button class="btn" type="button" id="btnLang" aria-label="Idioma">EN</button>
+      <span class="badge" id="badgeTiles">—</span>
+      <span class="badge" id="badgeCap">—</span>
+      <span class="badge" id="badgeReg">—</span>
+    </div>
+  </div>
+
+  <div id="loading" class="loading-banner card" style="padding:28px">Cargando mapa y datos…</div>
+
+  <div id="mainContent" hidden>
+    <main id="main" class="grid">
+      <section class="card">
+        <h2 id="mapTitle">Mapa <span class="badge">SPA v6</span></h2>
+        <div class="map-shell">
+          <div class="map-frame-title">
+            <div class="t" id="frameT">—</div>
+            <div class="s" id="frameS">—</div>
+          </div>
+          <div id="map" role="img" aria-label="Mapa del país"></div>
+          <div id="terrainPanel" class="terrain-panel"></div>
+        </div>
+        <div class="legend">
+          <span><i style="background:#d90429"></i> Capital</span>
+          <span><i style="background:#1b1b1b"></i> Ciudad del módulo</span>
+          <span><span class="box" style="background:#8fd19e"></span> Regiones (clic = nombre)</span>
+        </div>
+      </section>
+
+      <aside class="card">
+        <h2>Ficha 2025</h2>
+        <div class="body">
+          <div class="stats" id="statsBox"></div>
+          <div class="meta-row" id="metaRow"></div>
+          <div id="extraStats"></div>
+          <div id="wikiBox"></div>
+          <div id="regionLegend"></div>
+          <div id="sources"></div>
+        </div>
+      </aside>
+    </main>
+
+    <section class="card" style="margin-top:16px">
+      <h2>Ciudades del módulo</h2>
+      <div class="body">
+        <div class="tiles-tools">
+          <input id="tileSearch" type="search" placeholder="Buscar ciudad…" aria-label="Buscar ciudad"/>
+          <span class="badge" id="cityBadge">—</span>
+        </div>
+        <div style="overflow:auto;max-height:440px">
+          <table class="tiles-table">
+            <thead><tr><th>#</th><th>Nombre</th><th>Coordenadas</th><th>Match</th></tr></thead>
+            <tbody id="tilesBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <p class="footer">Atlas v6 · GeoJSON bajo demanda · caché localStorage · tema oscuro · DataPaises + Natural Earth</p>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="assets/core.js"></script>
+<script src="assets/extras.js"></script>
+<script src="assets/terrain_layers.js"></script>
+<script src="assets/common.js"></script>
+<script src="assets/atlas-app.js"></script>
+</body>
+</html>

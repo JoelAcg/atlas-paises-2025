@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Mapas regiones 2025 — Atlas v6</title>
+<link rel="stylesheet" href="assets/common.css"/>
+<link rel="stylesheet" href="assets/common_v6_append.css"/>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand"><div>
+      <h1 id="h1" style="text-transform:none">Mapas con regiones coloreadas</h1>
+      <div class="sub">SPA · lazy GeoJSON · filtros · tema oscuro · 162 países</div>
+    </div></div>
+    <div class="nav toolbar-v6">
+      <a href="combinar.html" id="linkCombo" style="font-weight:800;border-color:#93c5fd;background:#eff6ff">⚔ Combinar países</a>
+      <a href="comparar.html">⧉ Comparar 2</a>
+      <a href="quiz.html" id="linkQuiz">🧠 Quiz</a>
+      <button class="btn" type="button" id="btnOnlyFavs">★ Favoritos</button>
+      <a href="POBLACION_Y_STATS_2025.txt">TXT stats</a>
+      <span class="badge" id="countBadge">…</span>
+      <button class="btn" type="button" id="btnTheme" aria-label="Tema">🌙</button>
+      <button class="btn" type="button" id="btnLang" aria-label="Idioma">EN</button>
+    </div>
+  </div>
+
+  <div class="filters" role="search">
+    <input class="searchbox" id="q" type="search" placeholder="Buscar país…" aria-label="Buscar" style="margin:0;max-width:320px"/>
+    <label class="sr-only" for="fContinent">Continente</label>
+    <select id="fContinent" aria-label="Continente"></select>
+    <label class="sr-only" for="fSort">Orden</label>
+    <select id="fSort" aria-label="Ordenar">
+      <option value="name">Nombre</option>
+      <option value="pop">Población</option>
+      <option value="pib">PIB</option>
+      <option value="tiles">Tiles</option>
+      <option value="area">Área</option>
+      <option value="power">Poder (proxy)</option>
+    </select>
+    <div class="view-toggle" role="group" aria-label="Vista">
+      <button type="button" id="btnGrid" class="on">Cuadrícula</button>
+      <button type="button" id="btnList">Lista</button>
+    </div>
+  </div>
+
+  <div class="tour-row" aria-label="Rutas temáticas">
+    <span class="muted" style="font-size:.8rem;align-self:center">Rutas:</span>
+    <button type="button" class="btn" id="tourBig">🌍 Más grandes</button>
+    <button type="button" class="btn" id="tourPop">👥 Más poblados</button>
+    <button type="button" class="btn" id="tourPower">⚔ Más poder</button>
+  </div>
+
+  <main id="main">
+    <div id="grid" class="index-grid" aria-live="polite">
+      <p class="loading-banner">Cargando índice…</p>
+    </div>
+    <div class="pag-bar">
+      <button type="button" id="btnPrev" class="btn">← Anterior</button>
+      <span class="info" id="pagInfo">—</span>
+      <button type="button" id="btnNext" class="btn">Siguiente →</button>
+    </div>
+  </main>
+
+  <p class="footer">
+    Atlas v6 · GeoJSON en <code>assets/borders</code> + <code>assets/admin1</code> (fetch) ·
+    meta en <code>data/</code> · regenerar: <code>node _build_atlas_v6.js</code>
+  </p>
+</div>
+<script src="assets/core.js"></script>
+<script src="assets/extras.js"></script>
+<script src="assets/index-app.js"></script>
+</body>
+</html>

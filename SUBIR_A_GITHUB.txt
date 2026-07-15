@@ -1,0 +1,117 @@
+================================================================================
+  CÓMO SUBIR EL ATLAS A GITHUB (+ GitHub Pages gratis)
+================================================================================
+
+Carpeta a subir:
+  C:\Users\pc\OneDrive\Documentos\Paises\Mapas_HTML_2025
+
+NO hace falta Roblox. Es solo HTML/JS/JSON (sitio web estático).
+
+
+--------------------------------------------------------------------------------
+PASO 1 — Cuenta y Git
+--------------------------------------------------------------------------------
+
+1. Cuenta en https://github.com (si no tienes, créala).
+2. Instala Git para Windows: https://git-scm.com/download/win
+3. Reinicia la terminal después de instalar.
+
+
+--------------------------------------------------------------------------------
+PASO 2 — Crear el repositorio vacío en GitHub (web)
+--------------------------------------------------------------------------------
+
+1. Entra en: https://github.com/new
+2. Repository name:   atlas-paises-2025   (o el nombre que quieras)
+3. Public  (recomendado para Pages gratis)
+4. NO marques "Add a README" (la carpeta ya tiene archivos)
+5. Create repository
+
+
+--------------------------------------------------------------------------------
+PASO 3 — Subir desde PowerShell
+--------------------------------------------------------------------------------
+
+Abre PowerShell y pega TODO (cambia TU_USUARIO por tu usuario de GitHub):
+
+  cd "C:\Users\pc\OneDrive\Documentos\Paises\Mapas_HTML_2025"
+
+  git init
+  git add .
+  git status
+  git commit -m "Atlas mapas HTML v6 — combinar, comparar, quiz"
+
+  git branch -M main
+  git remote add origin https://github.com/TU_USUARIO/atlas-paises-2025.git
+  git push -u origin main
+
+La primera vez GitHub pedirá login:
+  - Navegador, o
+  - Personal Access Token (no uses la contraseña de la cuenta)
+
+Cómo crear token si lo pide:
+  GitHub → Settings → Developer settings → Personal access tokens
+  → Generate new token (classic) → marca "repo" → Generate
+  → Copia el ghp_... y pégalo cuando pida password
+
+
+--------------------------------------------------------------------------------
+PASO 4 — Publicar la web (GitHub Pages)
+--------------------------------------------------------------------------------
+
+1. En el repo: Settings → Pages
+2. Source: Deploy from a branch
+3. Branch: main   Folder: / (root)
+4. Save
+5. Espera 1–2 minutos
+6. Tu URL será:
+
+   https://TU_USUARIO.github.io/atlas-paises-2025/
+
+Páginas útiles:
+  .../index.html
+  .../combinar.html
+  .../comparar.html
+  .../quiz.html
+  .../atlas.html?pais=Spain
+
+
+--------------------------------------------------------------------------------
+PASO 5 — Actualizar cuando cambies algo
+--------------------------------------------------------------------------------
+
+  cd "C:\Users\pc\OneDrive\Documentos\Paises\Mapas_HTML_2025"
+  git add .
+  git commit -m "Actualizo atlas"
+  git push
+
+
+--------------------------------------------------------------------------------
+SI QUIERES QUE YO LO SUBA POR TI
+--------------------------------------------------------------------------------
+
+Opción A (mejor): en tu PC ejecuta una vez:
+
+  gh auth login
+
+(elige GitHub.com → HTTPS → Login with browser)
+
+Luego dime:
+  "Usuario: XXX, crea repo atlas-paises-2025 público y haz push"
+
+Opción B: crea un token con permiso "repo", guárdalo en:
+  C:\Users\pc\OneDrive\Documentos\Scripts\gh_token.txt
+y dime tu usuario + nombre del repo.
+Después REVOCA el token en GitHub.
+
+
+--------------------------------------------------------------------------------
+NOTAS
+--------------------------------------------------------------------------------
+
+- El .gitignore ya evita archivos pesados viejos (combo_data.js, etc.).
+- Si el push es muy grande, avísame y dejamos solo borders_lite.
+- En local siempre: serve-atlas.bat → http://127.0.0.1:5500/
+- En GitHub Pages NO necesitas serve-atlas.bat (GitHub ya es el servidor).
+
+================================================================================

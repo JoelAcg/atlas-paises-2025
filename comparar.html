@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Comparativa lateral — Atlas v6.1</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="assets/common.css"/>
+<link rel="stylesheet" href="assets/common_v6_append.css"/>
+<style>
+  .cmp-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:900px){.cmp-grid{grid-template-columns:1fr}}
+  .half-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+  .half-card h2{margin:0;padding:12px 14px;font-size:.95rem;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:center;background:var(--card-head)}
+  .half-map{height:380px;width:100%}
+  .pickers{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;align-items:center}
+  .pickers select{background:var(--panel);border:1px solid var(--line);color:var(--ink);border-radius:12px;padding:10px 12px;min-width:200px}
+  .stats-mini{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:12px}
+  .stats-mini .s{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:8px}
+  .stats-mini .k{font-size:.65rem;text-transform:uppercase;color:var(--muted);font-weight:700}
+  .stats-mini .v{font-size:1rem;font-weight:800}
+  .vs-banner{text-align:center;padding:10px;margin:10px 0;border-radius:12px;background:var(--soft);border:1px solid var(--line);font-weight:800}
+  .winner{color:#047857}
+  html[data-theme="dark"] .winner{color:#34d399}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand"><div>
+      <h1 style="text-transform:none;margin:0">Comparativa lateral</h1>
+      <div class="sub">Dos países · mismos datos · mapa partido</div>
+    </div></div>
+    <div class="nav">
+      <a href="index.html">← Índice</a>
+      <a href="combinar.html">Combinar</a>
+      <button class="btn" type="button" id="btnTheme">🌙</button>
+      <button class="btn" type="button" id="btnLang">EN</button>
+      <button class="btn" type="button" id="btnShare">🔗</button>
+    </div>
+  </div>
+
+  <div class="pickers">
+    <label>A <select id="selA" aria-label="País A"></select></label>
+    <label>B <select id="selB" aria-label="País B"></select></label>
+    <button type="button" class="btn" id="btnSwap">⇄ Intercambiar</button>
+    <button type="button" class="btn" id="btnGo">Actualizar</button>
+  </div>
+  <div class="vs-banner" id="vsBanner">Elige dos países</div>
+  <div class="cmp-grid" id="main">
+    <section class="half-card">
+      <h2 id="titleA"><img id="flagA" width="36" height="24" alt=""/> <span>País A</span></h2>
+      <div id="mapA" class="half-map"></div>
+      <div class="stats-mini" id="statsA"></div>
+    </section>
+    <section class="half-card">
+      <h2 id="titleB"><img id="flagB" width="36" height="24" alt=""/> <span>País B</span></h2>
+      <div id="mapB" class="half-map"></div>
+      <div class="stats-mini" id="statsB"></div>
+    </section>
+  </div>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="assets/core.js"></script>
+<script src="assets/extras.js"></script>
+<script src="assets/comparar-app.js"></script>
+</body>
+</html>

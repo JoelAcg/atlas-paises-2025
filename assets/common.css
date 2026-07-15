@@ -1,0 +1,164 @@
+/* MAPAS ATLAS v3 — mapa único por país */
+:root{
+  --ocean:#9fd3f0;
+  --ocean2:#7ec0e4;
+  --bg:#eef3f7;
+  --panel:#ffffff;
+  --ink:#14212b;
+  --muted:#5b6b7c;
+  --line:#d5dee7;
+  --capital:#d90429;
+  --city:#1b1b1b;
+  --accent:#0b6bcb;
+  --soft:#f7fafc;
+  --shadow:0 12px 40px rgba(20,33,43,.10);
+  --radius:18px;
+  --font:"Segoe UI", system-ui, -apple-system, sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:linear-gradient(180deg,#e9eef4,#f7f9fb);color:var(--ink);font-family:var(--font)}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:1520px;margin:0 auto;padding:18px 18px 56px}
+
+/* Header */
+.topbar{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;margin-bottom:16px}
+.brand{display:flex;gap:14px;align-items:center}
+.brand .flag-wrap{width:72px;height:50px;border-radius:10px;overflow:hidden;box-shadow:var(--shadow);border:1px solid #cfd8e3;background:#fff}
+.brand .flag-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+.brand h1{margin:0;font-size:1.85rem;letter-spacing:.04em;text-transform:uppercase;line-height:1.05}
+.brand .sub{color:var(--muted);font-size:.9rem;margin-top:3px}
+.nav{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.nav a,.btn{background:#fff;border:1px solid var(--line);color:var(--ink);padding:9px 13px;border-radius:999px;font-size:.84rem;cursor:pointer;box-shadow:0 1px 0 rgba(0,0,0,.03)}
+.nav a:hover,.btn:hover{border-color:#9bb7d3;text-decoration:none}
+.badge{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);padding:7px 11px;border-radius:999px;font-size:.78rem;color:var(--muted)}
+.badge strong{color:var(--ink)}
+
+/* Layout */
+.grid{display:grid;grid-template-columns:1.6fr .95fr;gap:16px}
+@media(max-width:1050px){.grid{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.card > h2{margin:0;padding:13px 16px;font-size:1rem;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:8px;background:linear-gradient(180deg,#fff,#f8fafc)}
+.card .body{padding:15px 16px}
+
+/* MAP — unique country frame */
+.map-shell{position:relative;background:linear-gradient(180deg,var(--ocean),var(--ocean2));}
+#map{height:640px;width:100%;background:var(--ocean)}
+.leaflet-container{background:var(--ocean)!important;font:inherit}
+.map-frame-title{
+  position:absolute;z-index:600;left:14px;top:14px;
+  background:rgba(255,255,255,.94);border:1px solid #cfd8e3;border-radius:12px;
+  padding:10px 14px;box-shadow:var(--shadow);pointer-events:none;
+}
+.map-frame-title .t{font-weight:900;letter-spacing:.06em;text-transform:uppercase;font-size:1rem}
+.map-frame-title .s{font-size:.75rem;color:var(--muted);margin-top:2px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;padding:11px 16px;border-top:1px solid var(--line);font-size:.8rem;color:var(--muted);background:#fcfdff}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:5px;vertical-align:middle;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.15)}
+.legend .box{display:inline-block;width:16px;height:11px;border:1.5px solid #2f3542;margin-right:5px;vertical-align:middle;border-radius:2px}
+
+/* City markers atlas style */
+.marker-root{background:transparent!important;border:none!important}
+.city-label-wrap{position:relative;white-space:nowrap;text-align:center}
+.city-dot{width:11px;height:11px;border-radius:50%;border:2.5px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.35);margin:0 auto}
+.city-dot.capital{width:17px;height:17px;background:var(--capital);box-shadow:0 0 0 4px rgba(217,4,41,.18),0 2px 6px rgba(0,0,0,.3)}
+.city-dot.normal{background:var(--city)}
+.city-dot.region{background:#6b7280;width:9px;height:9px}
+.city-name{
+  position:absolute;left:50%;transform:translateX(-50%);
+  top:13px;font:800 11.5px/1.15 "Segoe UI",Arial,sans-serif;color:#0f172a;
+  text-shadow:
+    0 0 4px #fff, 0 0 4px #fff, 0 0 4px #fff,
+    1px 0 #fff, -1px 0 #fff, 0 1px #fff, 0 -1px #fff;
+  pointer-events:none;max-width:130px;overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.city-name.capital{color:#9f1239;font-size:12.5px;top:18px;font-weight:900}
+.city-name.region{color:#475569;font-size:10px;font-weight:700}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.stat{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:12px}
+.stat .k{font-size:.68rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:700}
+.stat .v{font-size:1.22rem;font-weight:850;margin-top:4px;letter-spacing:-.02em}
+.stat .y{font-size:.72rem;color:#b45309;margin-top:3px}
+.meta-row{display:flex;flex-wrap:wrap;gap:6px;margin:11px 0 0}
+.chip{background:#f1f5f9;border:1px solid var(--line);border-radius:999px;padding:5px 10px;font-size:.76rem;color:var(--muted)}
+.chip b{color:var(--ink)}
+.section-title{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:15px 0 6px;font-weight:800}
+p.desc{margin:0 0 8px;color:#334155;font-size:.92rem;line-height:1.45}
+.sources{font-size:.8rem;color:var(--muted);padding-left:18px}
+.sources li{margin:3px 0}
+.alert{background:#fff7ed;border:1px solid #fdba74;color:#9a3412;padding:10px 12px;border-radius:12px;font-size:.84rem;margin-bottom:10px}
+
+/* Table */
+.tiles-tools{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;align-items:center}
+.tiles-tools input{flex:1;min-width:180px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:.9rem}
+.tiles-table{width:100%;border-collapse:collapse;font-size:.86rem}
+.tiles-table th,.tiles-table td{padding:8px 8px;border-bottom:1px solid var(--line);text-align:left}
+.tiles-table th{color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;font-weight:800}
+.tiles-table tr{cursor:pointer}
+.tiles-table tr:hover{background:#eef6ff}
+.tiles-table tr.active{background:#dbeafe}
+.num{display:inline-flex;min-width:26px;height:26px;padding:0 7px;align-items:center;justify-content:center;border-radius:999px;background:#0b6bcb;color:#fff;font-size:.74rem;font-weight:800}
+.num.capital{background:var(--capital)}
+.num.region{background:#6b7280}
+.tag{font-size:.68rem;padding:2px 7px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.tag.capital{color:#be123c;border-color:#fb7185;background:#fff1f2}
+.tag.region{background:#f1f5f9}
+.tag.out{color:#b45309;border-color:#fdba74;background:#fff7ed}
+.tag.ok{color:#047857;border-color:#6ee7b7;background:#ecfdf5}
+.footer{margin-top:16px;color:var(--muted);font-size:.76rem;text-align:center}
+
+/* Index */
+.index-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.index-card{display:block;background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;color:inherit;transition:.15s;box-shadow:var(--shadow)}
+.index-card:hover{border-color:#8eb6dd;transform:translateY(-2px);text-decoration:none}
+.index-card img{width:38px;height:27px;object-fit:cover;border-radius:4px;vertical-align:middle;margin-right:8px;border:1px solid var(--line)}
+.index-card .t{font-weight:850}
+.index-card .m{color:var(--muted);font-size:.8rem;margin-top:5px}
+.searchbox{width:100%;max-width:460px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:6px 0 16px;font-size:.95rem}
+
+/* Hide leaflet attribution slightly cleaner */
+.leaflet-control-attribution{font-size:10px!important;background:rgba(255,255,255,.75)!important}
+
+/* land-strong */
+#map{background:#6fa8cc!important}
+.leaflet-container{background:#6fa8cc!important}
+.map-shell{background:linear-gradient(180deg,#7eb8dc,#5a9fc4)}
+
+/* v4 regions */
+.region-legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;max-height:160px;overflow:auto}
+.region-legend .item{display:inline-flex;align-items:center;gap:5px;font-size:.72rem;color:#475569;background:#f8fafc;border:1px solid #e2e8f0;border-radius:999px;padding:3px 8px}
+.region-legend .sw{width:12px;height:12px;border-radius:3px;border:1px solid rgba(0,0,0,.2);flex-shrink:0}
+.nation-banner{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 0}
+.nation-banner .n{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;font-weight:700;padding:5px 10px;border-radius:999px;border:1px solid #cbd5e1;background:#fff}
+.nation-banner .sw{width:14px;height:14px;border-radius:4px;border:1px solid rgba(0,0,0,.25)}
+
+/* v5 terreno / biomas */
+.map-shell{position:relative}
+#terrainPanel.terrain-panel,
+.terrain-panel{
+  position:absolute;z-index:700;right:10px;top:10px;max-width:260px;
+  background:rgba(255,255,255,.94);border:1px solid #cfd8e3;border-radius:12px;
+  box-shadow:0 8px 24px rgba(15,23,42,.12);padding:10px 11px;font-size:.78rem;
+  backdrop-filter:blur(6px);
+}
+.terrain-title{font-weight:800;font-size:.82rem;margin:0 0 6px;color:#0f172a;letter-spacing:.02em}
+.terrain-btns{display:flex;flex-wrap:wrap;gap:5px}
+.terrain-btn{
+  border:1px solid #cbd5e1;background:#f8fafc;border-radius:999px;
+  padding:5px 9px;font-size:.7rem;font-weight:700;cursor:pointer;color:#334155;
+}
+.terrain-btn:hover{border-color:#93c5fd;background:#eff6ff}
+.terrain-btn.active{background:#1d4ed8;border-color:#1d4ed8;color:#fff}
+.terrain-hint{margin:7px 0 4px;color:#64748b;font-size:.7rem;line-height:1.35}
+.terrain-legend{display:flex;flex-wrap:wrap;gap:6px 8px;margin-top:6px;padding-top:6px;border-top:1px solid #e2e8f0;color:#475569;font-size:.68rem}
+.terrain-legend span{display:inline-flex;align-items:center;gap:4px}
+.terrain-legend i{width:12px;height:12px;border-radius:3px;display:inline-block;border:1px solid rgba(0,0,0,.15)}
+.terrain-legend .t-desert{background:linear-gradient(135deg,#f0d5a8,#c9a66b)}
+.terrain-legend .t-forest{background:linear-gradient(135deg,#3d8b4f,#1b5e20)}
+.terrain-legend .t-mount{background:linear-gradient(135deg,#8d8d8d,#5a5a5a,#cfcfcf)}
+.terrain-legend .t-snow{background:linear-gradient(135deg,#f8fafc,#e2e8f0)}
+.terrain-legend .t-water{background:linear-gradient(135deg,#38bdf8,#0369a1)}
+/* combo page: panel relative under map */
+.map-panel .terrain-panel{position:relative;right:auto;top:auto;max-width:none;margin:0;border-radius:0;border-left:0;border-right:0;border-bottom:0}

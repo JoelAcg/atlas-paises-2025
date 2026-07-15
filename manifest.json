@@ -1,0 +1,26 @@
+{
+  "version": 6.1,
+  "generated": "2026-07-15T18:17:10.069Z",
+  "features": [
+    "spa_atlas",
+    "lazy_geojson_fetch",
+    "localStorage_cache",
+    "dark_theme",
+    "combo_lazy",
+    "charts",
+    "war_sim",
+    "quiz",
+    "export_share",
+    "i18n_es_en",
+    "filters_pagination",
+    "military_proxy_educational"
+  ],
+  "paths": {
+    "index": "index.html",
+    "atlas": "atlas.html",
+    "combinar": "combinar.html",
+    "quiz": "quiz.html",
+    "dataIndex": "data/index.json",
+    "comboIndex": "assets/combo_index.json"
+  }
+}

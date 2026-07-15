@@ -1,0 +1,33 @@
+# Secrets — NEVER commit
+token.txt
+**/token.txt
+gh_token.txt
+**/gh_token.txt
+.env
+*.pem
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Local / temp
+*.log
+*.tmp
+.cache/
+
+# Heavy / legacy (v6 no los necesita en runtime)
+assets/combo_data.js
+assets/admin1_10m.geojson
+assets/admin1_states.geojson
+assets/countries.geojson
+assets/restcountries_raw.json
+assets/pop_json.json
+assets/wb_gdp.csv
+assets/wb_population.csv
+assets/apicountries.json

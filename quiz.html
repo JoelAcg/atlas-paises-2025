@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Quiz geopolítico — Atlas v6</title>
+<link rel="stylesheet" href="assets/common.css"/>
+<link rel="stylesheet" href="assets/common_v6_append.css"/>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand"><div>
+      <h1 style="text-transform:none">Cuestionario</h1>
+      <div class="sub">Capitales · banderas · datos · contornos</div>
+    </div></div>
+    <div class="nav">
+      <a href="index.html">← Índice</a>
+      <a href="combinar.html">Combinar</a>
+      <button class="btn" type="button" id="btnTheme">🌙</button>
+      <button class="btn" type="button" id="btnLang">EN</button>
+      <span class="badge" id="scoreBadge">0 pts</span>
+    </div>
+  </div>
+
+  <main id="main" class="card quiz-card">
+    <div class="body">
+      <div class="meta-row" style="margin-bottom:12px">
+        <span class="chip">Ronda <b id="roundN">1</b></span>
+        <span class="chip">Aciertos <b id="hits">0</b></span>
+        <span class="chip">Racha <b id="streak">0</b></span>
+      </div>
+      <p id="qText" style="font-size:1.15rem;font-weight:800;margin:0 0 8px">Cargando…</p>
+      <div id="qExtra" style="margin-bottom:12px"></div>
+      <div id="opts"></div>
+      <div class="tour-row" style="margin-top:16px">
+        <button type="button" class="btn" id="btnNext">Siguiente</button>
+        <button type="button" class="btn" id="btnReset">Reiniciar</button>
+      </div>
+      <p class="note" id="feedback" style="min-height:1.2em"></p>
+    </div>
+  </main>
+</div>
+<script src="assets/core.js"></script>
+<script>
+(function(){
+  const C = AtlasCore;
+  C.wireChrome();
+  let countries = [];
+  let score = 0, hits = 0, streak = 0, round = 1;
+  let current = null;
+
+  function shuffle(a){
+    a = a.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [a[i],a[j]]=[a[j],a[i]];
+    }
+    return a;
+  }
+  function pickN(arr,n){
+    return shuffle(arr).slice(0,n);
+  }
+
+  function makeQuestion(){
+    const types = ["capital","flag","pop","power"];
+    const type = types[Math.floor(Math.random()*types.length)];
+    const pool = countries.filter(c => c.capital && c.es);
+    const correct = pool[Math.floor(Math.random()*pool.length)];
+    let wrong = pickN(pool.filter(c => c.key !== correct.key), 3);
+    let opts, text, extra = "";
+
+    if(type === "capital"){
+      text = "¿Cuál es la capital de módulo de " + correct.es + "?";
+      opts = shuffle([correct.capital, ...wrong.map(w => w.capital)]);
+      current = { answer: correct.capital, type };
+    } else if(type === "flag"){
+      text = "¿De qué país es esta bandera?";
+      extra = '<img src="'+C.escapeHtml(correct.flag)+'" alt="bandera" width="96" height="64" style="border:1px solid var(--line);border-radius:6px"/>';
+      opts = shuffle([correct.es, ...wrong.map(w => w.es)]);
+      current = { answer: correct.es, type };
+    } else if(type === "pop"){
+      text = "¿Qué país tiene más población?";
+      const four = pickN(pool, 4).sort((a,b)=>(b.poblacion||0)-(a.poblacion||0));
+      const best = four[0];
+      opts = shuffle(four.map(c => c.es));
+      current = { answer: best.es, type };
+      extra = '<span class="muted" style="font-size:.85rem">Elige el de mayor población (datos 2025*)</span>';
+    } else {
+      text = "¿Qué país tiene mayor índice de poder (proxy educativo)?";
+      const four = pickN(pool.filter(c=>c.power!=null), 4).sort((a,b)=>(b.power||0)-(a.power||0));
+      const best = four[0];
+      opts = shuffle(four.map(c => c.es));
+      current = { answer: best.es, type };
+    }
+
+    document.getElementById("qText").textContent = text;
+    document.getElementById("qExtra").innerHTML = extra;
+    document.getElementById("feedback").textContent = "";
+    const box = document.getElementById("opts");
+    box.innerHTML = opts.map(o =>
+      '<button type="button" class="quiz-opt" data-v="'+C.escapeHtml(o)+'">'+C.escapeHtml(o)+'</button>'
+    ).join("");
+    box.querySelectorAll(".quiz-opt").forEach(btn => {
+      btn.addEventListener("click", () => answer(btn));
+    });
+    document.getElementById("roundN").textContent = round;
+  }
+
+  function answer(btn){
+    if(btn.disabled) return;
+    const v = btn.getAttribute("data-v");
+    const ok = v === current.answer;
+    document.querySelectorAll(".quiz-opt").forEach(b => {
+      b.disabled = true;
+      if(b.getAttribute("data-v") === current.answer) b.classList.add("good");
+      if(b === btn && !ok) b.classList.add("bad");
+    });
+    if(ok){
+      hits++; streak++; score += 10 + Math.min(streak*2, 20);
+      document.getElementById("feedback").textContent = "✔ Correcto (+"+(10+Math.min(streak*2,20))+")";
+    } else {
+      streak = 0;
+      document.getElementById("feedback").textContent = "✖ Era: " + current.answer;
+    }
+    document.getElementById("hits").textContent = hits;
+    document.getElementById("streak").textContent = streak;
+    document.getElementById("scoreBadge").textContent = score + " pts";
+    try { localStorage.setItem("atlasv6:quizScore", String(score)); } catch(e){}
+  }
+
+  async function boot(){
+    const idx = await C.fetchJson("data/index.json");
+    countries = idx.countries;
+    try {
+      score = parseInt(localStorage.getItem("atlasv6:quizScore")||"0",10)||0;
+      document.getElementById("scoreBadge").textContent = score + " pts";
+    } catch(e){}
+    makeQuestion();
+    document.getElementById("btnNext").addEventListener("click", () => {
+      round++;
+      makeQuestion();
+    });
+    document.getElementById("btnReset").addEventListener("click", () => {
+      score = 0; hits = 0; streak = 0; round = 1;
+      localStorage.removeItem("atlasv6:quizScore");
+      document.getElementById("hits").textContent = "0";
+      document.getElementById("streak").textContent = "0";
+      document.getElementById("scoreBadge").textContent = "0 pts";
+      makeQuestion();
+    });
+  }
+  boot().catch(e => {
+    document.getElementById("qText").textContent = "Error: ejecuta node _build_atlas_v6.js";
+    console.error(e);
+  });
+})();
+</script>
+</body>
+</html>
