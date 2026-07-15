@@ -21,6 +21,15 @@
 .army-bubble{min-width:40px!important;height:40px!important;font-size:13px!important}
 .army-bubble.mine{box-shadow:0 0 0 3px #fff,0 0 0 5px currentColor}
 .army-bubble.sel{outline:3px solid #fbbf24}
+.tile-city-label{background:transparent!important;border:none!important}
+.tile-city-label .tcl{
+  transform:translate(-50%,-50%);
+  font:700 10px/1.1 "Segoe UI",system-ui,sans-serif;
+  color:#0f172a;
+  text-shadow:0 0 3px #fff,0 0 3px #fff,1px 0 #fff,-1px 0 #fff,0 1px #fff,0 -1px #fff;
+  white-space:nowrap;pointer-events:none;max-width:110px;overflow:hidden;text-overflow:ellipsis
+}
+.tile-city-label .tcl.cap{color:#9f1239;font-weight:900;font-size:11px}
 /* tile selection hints in panel */
 .tile-legend{display:flex;flex-wrap:wrap;gap:8px;font-size:.72rem;margin:8px 0;color:var(--muted)}
 .tile-legend i{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:middle;margin-right:4px;border:2px solid #0f172a}

@@ -118,8 +118,33 @@
     return state;
   }
 
+  /** Centroide aproximado de un Polygon / MultiPolygon (lon,lat GeoJSON) */
+  function geomCentroid(geom) {
+    if (!geom) return null;
+    let ring = null;
+    if (geom.type === "Polygon") ring = geom.coordinates[0];
+    else if (geom.type === "MultiPolygon")
+      ring = geom.coordinates[0] && geom.coordinates[0][0];
+    if (!ring || !ring.length) return null;
+    let sx = 0,
+      sy = 0,
+      n = 0;
+    for (let i = 0; i < ring.length; i++) {
+      const c = ring[i];
+      if (!c || c.length < 2) continue;
+      sx += c[0];
+      sy += c[1];
+      n++;
+    }
+    if (!n) return null;
+    return { lon: sx / n, lat: sy / n };
+  }
+
   /**
-   * countryPacks: { key: { es, capital, cities:[{name,lat,lon,capital}], border? } }
+   * countryPacks: {
+   *   key: { es, capital, cities, admin1: FeatureCollection, border? }
+   * }
+   * Tiles = polígonos admin1 (como Roblox / mapa de estados). 1 ciudad (capital del tile).
    */
   function startGame(state, countryPacks) {
     const players = Object.values(state.players);
@@ -135,12 +160,15 @@
     state.armies = {};
     state.battles = {};
     state.winner = null;
+    state.tileMode = "polygon"; // admin1 polygons + black borders
 
     const start = CFG().START;
     for (const p of players) {
       const pack = countryPacks[p.countryKey];
       if (!pack) continue;
-      const cities = (pack.cities || []).filter((c) => c.lat != null && c.lon != null);
+      const cities = (pack.cities || []).filter(
+        (c) => c.lat != null && c.lon != null
+      );
       const capitalName =
         pack.capital ||
         (cities.find((c) => c.capital) || cities[0] || {}).name;
@@ -152,7 +180,7 @@
         money: start.money,
         manpower: start.manpower,
         techs: {},
-        research: null, // { techId, endsAt }
+        research: null,
         incomeMul: 1,
         atkMul: 1,
         defMul: 1,
@@ -161,33 +189,118 @@
         airAtkMul: 1,
       };
 
-      cities.forEach((c) => {
-        const tid = p.countryKey + "::" + c.name;
-        state.tiles[tid] = {
-          id: tid,
-          name: c.name,
-          lat: c.lat,
-          lon: c.lon,
-          homeCountry: p.countryKey,
-          owner: p.countryKey,
-          capital: c.name === capitalName || !!c.capital,
-          buildings: {},
-          lastProd: {},
-        };
-      });
+      const admin = pack.admin1;
+      const features =
+        admin && admin.features && admin.features.length
+          ? admin.features
+          : null;
 
-      // army at capital
+      if (features) {
+        // ─── Tiles = regiones admin (polígonos coloreados + borde negro) ───
+        features.forEach((feat, idx) => {
+          const pr = feat.properties || {};
+          const name =
+            pr.name_es || pr.name || pr.NAME || "Región " + (idx + 1);
+          const cen = geomCentroid(feat.geometry);
+          if (!cen) return;
+          // 1 ciudad por tile: ciudad del módulo más cercana, o nombre de región
+          let cityName = name;
+          let bestD = Infinity;
+          cities.forEach((c) => {
+            const d = distDeg(
+              { lat: cen.lat, lon: cen.lon },
+              { lat: c.lat, lon: c.lon }
+            );
+            if (d < bestD) {
+              bestD = d;
+              cityName = c.name;
+            }
+          });
+          // capital del país: tile que contiene la capital del módulo (más cercana)
+          const isCap =
+            !!capitalName &&
+            (cityName === capitalName ||
+              name.toLowerCase().indexOf(
+                String(capitalName).toLowerCase().slice(0, 4)
+              ) >= 0);
+
+          const tid = p.countryKey + "::" + name;
+          state.tiles[tid] = {
+            id: tid,
+            name: name,
+            cityName: cityName,
+            lat: cen.lat,
+            lon: cen.lon,
+            homeCountry: p.countryKey,
+            owner: p.countryKey,
+            capital: false,
+            buildings: {},
+            lastProd: {},
+            // geometry for Leaflet (serializable)
+            geometry: feat.geometry,
+            fillHint: pr.color || null,
+          };
+          if (isCap) state.tiles[tid].capital = true;
+        });
+        // exact capital: closest tile to capital city coords
+        const capCity = cities.find((c) => c.name === capitalName) || cities[0];
+        if (capCity) {
+          let best = null;
+          let bestD = Infinity;
+          Object.values(state.tiles).forEach((t) => {
+            if (t.homeCountry !== p.countryKey) return;
+            const d = distDeg(
+              { lat: t.lat, lon: t.lon },
+              { lat: capCity.lat, lon: capCity.lon }
+            );
+            if (d < bestD) {
+              bestD = d;
+              best = t;
+            }
+          });
+          if (best) {
+            Object.values(state.tiles).forEach((t) => {
+              if (t.homeCountry === p.countryKey) t.capital = t.id === best.id;
+            });
+            best.cityName = capitalName;
+            best.lat = capCity.lat;
+            best.lon = capCity.lon;
+          }
+        }
+      } else {
+        // fallback: 1 tile por ciudad (viejo)
+        cities.forEach((c) => {
+          const tid = p.countryKey + "::" + c.name;
+          state.tiles[tid] = {
+            id: tid,
+            name: c.name,
+            cityName: c.name,
+            lat: c.lat,
+            lon: c.lon,
+            homeCountry: p.countryKey,
+            owner: p.countryKey,
+            capital: c.name === capitalName || !!c.capital,
+            buildings: {},
+            lastProd: {},
+            geometry: null,
+          };
+        });
+      }
+
       const capTile = Object.values(state.tiles).find(
         (t) => t.homeCountry === p.countryKey && t.capital
       );
-      if (capTile) {
+      const spawn =
+        capTile ||
+        Object.values(state.tiles).find((t) => t.homeCountry === p.countryKey);
+      if (spawn) {
         const aid = uid("army");
         state.armies[aid] = {
           id: aid,
           country: p.countryKey,
-          tileId: capTile.id,
-          lat: capTile.lat,
-          lon: capTile.lon,
+          tileId: spawn.id,
+          lat: spawn.lat,
+          lon: spawn.lon,
           units: clone(start.unitsAtCapital),
           moving: null,
           moveQueue: [],
@@ -196,9 +309,12 @@
     }
 
     buildAdjacency(state);
+    const nTiles = Object.keys(state.tiles).length;
     log(
       state,
-      "¡Partida iniciada! Movimiento tile a tile (ciudades = casillas HOI)."
+      "¡Partida! " +
+        nTiles +
+        " tiles (polígonos con borde negro). 1 ciudad/tile. Movimiento casilla a casilla."
     );
     return state;
   }

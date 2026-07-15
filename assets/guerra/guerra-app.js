@@ -220,127 +220,107 @@
           .filter(Boolean)
       ),
     ];
-    // borders (async once per pack)
-    keys.forEach((k) => {
-      const pack = packs[k];
-      if (!pack) return;
-      const drawBorder = (geo) => {
-        if (!geo) return;
-        L.geoJSON(geo, {
-          style: {
-            color: colorForCountry(k),
-            weight: 2.5,
-            fillColor: colorForCountry(k),
-            fillOpacity: 0.28,
-          },
-          interactive: false,
-        }).addTo(borderLayer);
-      };
-      if (pack.border) drawBorder(pack.border);
-      else if (pack.borderUrl && !pack._borderLoading) {
-        pack._borderLoading = true;
-        C.fetchJson(pack.borderUrl)
-          .then((geo) => {
-            pack.border = geo;
-            pack._borderLoading = false;
-            // one redraw of borders only if still playing
-            if (state && state.phase === "playing") {
-              try {
-                drawBorder(geo);
-              } catch (e) {}
-            }
-          })
-          .catch(() => {
-            pack._borderLoading = false;
-          });
-      }
-    });
-
-    // links de adyacencia (estilo red de provincias) — sutiles
-    const drawn = {};
-    Object.keys(state.adjacency || {}).forEach((aId) => {
-      const a = state.tiles[aId];
-      if (!a) return;
-      (state.adjacency[aId] || []).forEach((bId) => {
-        const key = aId < bId ? aId + "|" + bId : bId + "|" + aId;
-        if (drawn[key]) return;
-        drawn[key] = true;
-        const b = state.tiles[bId];
-        if (!b) return;
-        L.polyline(
-          [
-            [a.lat, a.lon],
-            [b.lat, b.lon],
-          ],
-          {
-            color: "#64748b",
-            weight: 1,
-            opacity: 0.35,
-            dashArray: "4 6",
-            interactive: false,
-          }
-        ).addTo(linkLayer);
-      });
-    });
-
-    // highlights: tile seleccionado + vecinos válidos para mover
     const army =
       selectedArmyId && state.armies[selectedArmyId]
         ? state.armies[selectedArmyId]
         : null;
     const fromTileId = army ? army.tileId : selectedTileId;
     const neigh = fromTileId ? E.neighbors(state, fromTileId) : [];
-
-    if (fromTileId && state.tiles[fromTileId]) {
-      const ft = state.tiles[fromTileId];
-      L.circleMarker([ft.lat, ft.lon], {
-        radius: 18,
-        color: "#22c55e",
-        weight: 4,
-        fillColor: "#4ade80",
-        fillOpacity: 0.35,
-        interactive: false,
-      }).addTo(highlightLayer);
-    }
-    neigh.forEach((nid) => {
-      const t = state.tiles[nid];
-      if (!t) return;
-      const enemy = t.owner !== myCountry();
-      L.circleMarker([t.lat, t.lon], {
-        radius: 15,
-        color: enemy ? "#ef4444" : "#eab308",
-        weight: 3,
-        fillColor: enemy ? "#f87171" : "#fde047",
-        fillOpacity: 0.45,
-        interactive: false,
-      }).addTo(highlightLayer);
+    const neighSet = {};
+    neigh.forEach((id) => {
+      neighSet[id] = true;
     });
 
-    // tiles (casillas = ciudades del módulo)
+    // ─── TILES = polígonos admin (borde negro como Roblox / mapa DE) ───
     Object.values(state.tiles || {}).forEach((t) => {
-      if (t.lat == null || t.lon == null) return;
       const col = colorForCountry(t.owner);
       const isSel = t.id === fromTileId || t.id === selectedTileId;
-      const isNeigh = neigh.indexOf(t.id) >= 0;
-      const r = isSel ? 14 : t.capital ? 11 : isNeigh ? 10 : 7;
-      const m = L.circleMarker([t.lat, t.lon], {
-        radius: r,
-        color: isSel ? "#16a34a" : isNeigh ? "#ca8a04" : "#0f172a",
-        weight: isSel ? 4 : 2,
-        fillColor: isSel ? "#22c55e" : col,
-        fillOpacity: isSel ? 0.95 : 0.9,
-      }).addTo(tileLayer);
-      m.bindTooltip(
-        "<b>Tile: " +
-          t.name +
-          (t.capital ? " ★" : "") +
-          "</b><br>Dueño: " +
-          ((state.countries[t.owner] || {}).es || t.owner) +
-          (isNeigh ? "<br>➜ Destino adyacente" : ""),
-        { sticky: true, direction: "top" }
-      );
-      m.on("click", () => onTileClick(t.id));
-      tileMarkers[t.id] = m;
+      const isNeigh = !!neighSet[t.id];
+      const enemyNeigh = isNeigh && t.owner !== myCountry();
+
+      let stroke = "#111827"; // borde negro
+      let sw = 1.8;
+      let fill = col;
+      let fo = 0.72;
+      if (isSel) {
+        stroke = "#16a34a";
+        sw = 3.5;
+        fill = "#22c55e";
+        fo = 0.8;
+      } else if (enemyNeigh) {
+        stroke = "#b91c1c";
+        sw = 3;
+        fo = 0.75;
+      } else if (isNeigh) {
+        stroke = "#ca8a04";
+        sw = 3;
+        fo = 0.78;
+      }
+
+      if (t.geometry) {
+        const layer = L.geoJSON(
+          { type: "Feature", properties: {}, geometry: t.geometry },
+          {
+            style: {
+              color: stroke,
+              weight: sw,
+              fillColor: fill,
+              fillOpacity: fo,
+              opacity: 1,
+            },
+            onEachFeature: function (feat, lyr) {
+              lyr.bindTooltip(
+                "<b>" +
+                  C.escapeHtml(t.name) +
+                  "</b>" +
+                  (t.capital ? " ★" : "") +
+                  "<br>Ciudad: " +
+                  C.escapeHtml(t.cityName || t.name) +
+                  "<br>Dueño: " +
+                  C.escapeHtml(
+                    (state.countries[t.owner] || {}).es || t.owner
+                  ) +
+                  (isNeigh ? "<br>➜ Tile adyacente" : ""),
+                { sticky: true }
+              );
+              lyr.on("click", () => onTileClick(t.id));
+            },
+          }
+        );
+        layer.addTo(tileLayer);
+        tileMarkers[t.id] = layer;
+      } else if (t.lat != null) {
+        // fallback punto
+        const m = L.circleMarker([t.lat, t.lon], {
+          radius: isSel ? 14 : 8,
+          color: stroke,
+          weight: sw,
+          fillColor: fill,
+          fillOpacity: fo,
+        }).addTo(tileLayer);
+        m.on("click", () => onTileClick(t.id));
+        tileMarkers[t.id] = m;
+      }
+
+      // 1 etiqueta ciudad por tile (no 20 puntos sueltos)
+      if (t.lat != null && t.lon != null) {
+        const label = t.cityName || t.name;
+        L.marker([t.lat, t.lon], {
+          interactive: false,
+          keyboard: false,
+          icon: L.divIcon({
+            className: "tile-city-label",
+            html:
+              '<div class="tcl' +
+              (t.capital ? " cap" : "") +
+              '">' +
+              C.escapeHtml(label) +
+              (t.capital ? " ★" : "") +
+              "</div>",
+            iconSize: [0, 0],
+          }),
+        }).addTo(tileLayer);
+      }
     });
 
     // armies — bubbles grandes (móvil)
@@ -688,12 +668,18 @@
       armies.forEach((a) => {
         const tile = state.tiles[a.tileId];
         const selected = selectedArmyId === a.id;
+        const tileLabel = tile
+          ? tile.name +
+            (tile.cityName && tile.cityName !== tile.name
+              ? " · " + tile.cityName
+              : "")
+          : "?";
         html +=
           '<div class="army-card' +
           (selected ? " active" : "") +
           '">' +
           "<div><b>" +
-          (tile ? tile.name : "?") +
+          C.escapeHtml(tileLabel) +
           "</b> · " +
           E.totalUnits(a.units) +
           " u." +
@@ -922,12 +908,32 @@
   }
 
   // ─── Load countries for lobby ──────────────────────────
+  async function loadAdmin1ForPack(pack) {
+    if (!pack) return pack;
+    if (pack.admin1 && pack.admin1.features) return pack;
+    const iso = (pack.iso || pack.iso2 || "").toLowerCase();
+    const url =
+      pack.regionsUrl ||
+      (iso ? "assets/admin1/" + iso + ".json" : null);
+    if (!url) return pack;
+    try {
+      pack.admin1 = await C.fetchJson(url);
+    } catch (e) {
+      console.warn("admin1 fail", pack.key, url, e);
+      pack.admin1 = null;
+    }
+    return pack;
+  }
+
   async function loadCountryOptions(keys) {
     countryList = [];
     packs = {};
     for (const key of keys) {
       try {
-        const pack = await C.fetchJson("data/countries/" + encodeURIComponent(key) + ".json");
+        let pack = await C.fetchJson(
+          "data/countries/" + encodeURIComponent(key) + ".json"
+        );
+        pack = await loadAdmin1ForPack(pack);
         packs[key] = pack;
         countryList.push({ key, es: pack.es || key });
       } catch (e) {
@@ -949,6 +955,7 @@
           );
         } catch (e) {}
       }
+      if (packs[k]) await loadAdmin1ForPack(packs[k]);
     }
   }
 

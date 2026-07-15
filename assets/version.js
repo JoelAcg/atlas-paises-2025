@@ -5,9 +5,9 @@
  *   minor  6.3.1 → 6.4.0  (feature)
  *   major  6.4.0 → 7.0.0  (cambio grande)
  */
-window.ATLAS_VERSION = "6.5.0";
+window.ATLAS_VERSION = "6.6.0";
 window.ATLAS_VERSION_DATE = "2026-07-15";
-window.ATLAS_VERSION_LABEL = "Guerra tile-a-tile HOI + highlight";
+window.ATLAS_VERSION_LABEL = "Tiles poligono negro + fix atlas";
 
 (function () {
   function paint() {

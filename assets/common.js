@@ -1,6 +1,23 @@
 /* Mapas v6 — regiones + ciudades + terreno + carga async de GeoJSON */
 window.PaisesMap = {
   async init(cfg) {
+    function bringFront(layer) {
+      if (!layer) return;
+      try {
+        if (typeof layer.bringToFront === "function") {
+          layer.bringToFront();
+          return;
+        }
+        if (typeof layer.eachLayer === "function") {
+          layer.eachLayer(function (l) {
+            if (l && typeof l.bringToFront === "function") l.bringToFront();
+          });
+        }
+      } catch (e) {
+        /* ignore */
+      }
+    }
+
     const ocean = cfg.ocean || "#7eb8dc";
     const map = L.map("map", {
       scrollWheelZoom: true,
@@ -117,8 +134,8 @@ window.PaisesMap = {
           restyleRegions();
         },
       });
-      regionLayer.bringToFront();
-      cityLayer.bringToFront();
+      bringFront(regionLayer);
+      bringFront(cityLayer);
     } else {
       L.rectangle(
         [
@@ -273,8 +290,8 @@ window.PaisesMap = {
     }
 
     setTimeout(function () {
-      regionLayer.bringToFront();
-      cityLayer.bringToFront();
+      bringFront(regionLayer);
+      bringFront(cityLayer);
     }, 100);
 
     document.querySelectorAll("[data-tile-n]").forEach((row) => {
